@@ -53,6 +53,16 @@ const getSpecificShop = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+const getActive_shops = async (req, res) => {
+  try {
+    const { shopID } = req.params;
+    const shop = await Shops.find({ shopID });
+    res.status(200).json(shop);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
 // /* UPDATE */
 // export const likePost = async (req, res) => {
 //   try {

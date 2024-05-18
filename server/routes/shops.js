@@ -12,6 +12,7 @@ const router = express.Router();
 // // /* READ */
 router.get("/", getShops);
 router.get("/:shopID", getSpecificShop);
+router.get("/:active_shops", getActive_shops);
 
 // Create
 router.post("/create", createShop);

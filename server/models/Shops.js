@@ -7,6 +7,11 @@ const shopsSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    Status: {
+      type: String,
+      required: true,
+      default: "active"
+    },
     shopName: {
       type: String,
       required: true,
