@@ -8,6 +8,12 @@ const {
   updateShopStatus,
   deleteShop,
 } = require("../controllers/shops");
+const {
+  insertNewCustomer,
+  updateCustomer,
+  deleteCustomer,
+} = require("../controllers/customers");
+
 const { verifyToken } = require("../middleware/auth");
 
 const router = express.Router();
@@ -16,6 +22,10 @@ const router = express.Router();
 router.get("/", getShops);
 router.get("/active_shops", getActive_shops);
 router.get("/:shopID", getSpecificShop);
+
+router.post("/:shopID/customers/insert", insertNewCustomer); // new customer.
+router.put("/:shopID/customers/:customerID", updateCustomer); // update a customer's info.
+router.delete("/:shopID/customers/:customerID", deleteCustomer); // delete a customer
 
 // Create
 router.post("/create", createShop);

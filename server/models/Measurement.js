@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const measurementSchema = new mongoose.Schema({
   status: {
     type: Boolean,
+    required: true,
     default: false,
   },
   date: {
@@ -87,21 +88,9 @@ const measurementSchema = new mongoose.Schema({
   },
   additionalRequirements: {
     type: String,
-    required: false,
+    required: true,
   },
 });
 
-const customerSchema = new mongoose.Schema({
-  fullName: {
-    type: String,
-    required: true,
-  },
-  phoneNumber: {
-    type: String,
-    required: true,
-  },
-  measurements: [measurementSchema],
-});
-
-const Customer = mongoose.model("Customer", customerSchema);
-module.exports = Customer;
+const Measurement = mongoose.model("Measurement", measurementSchema);
+module.exports = Measurement;

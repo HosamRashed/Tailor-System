@@ -21,10 +21,12 @@ const shopsSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    customers: {
-      type: [Customers.schema], // Embedding the Customer schema,
-      default: [],
-    },
+    customers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Customer",
+      },
+    ],
   },
   { timestamps: true }
 );

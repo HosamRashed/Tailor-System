@@ -163,7 +163,7 @@ mongoose
   .then(() => {
     app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
 
-    insertDummyData();
+    // insertDummyData();
     /* ADD DATA ONE TIME */
     // Shops.insertMany(dummyData)
     //   .then(() => {

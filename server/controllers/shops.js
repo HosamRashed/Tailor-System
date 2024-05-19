@@ -39,7 +39,6 @@ const createShop = async (req, res) => {
 const getShops = async (req, res) => {
   try {
     const shops = await Shops.find();
-    console.log("activeShops");
     res.status(200).json(shops);
   } catch (err) {
     res.status(404).json({ message: err.message });
@@ -59,7 +58,6 @@ const getSpecificShop = async (req, res) => {
 const getActive_shops = async (req, res) => {
   try {
     const activeShops = await Shops.find({ status: true });
-    console.log("activeShops");
     res.status(200).json(activeShops);
   } catch (err) {
     res.status(500).json({ message: err.message });
