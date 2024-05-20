@@ -20,6 +20,7 @@ const {
 const {
   insertNewMeasurement,
   updateMeasurement,
+  deleteMeasurement,
 } = require("../controllers/measurement");
 
 const { verifyToken } = require("../middleware/auth");
@@ -59,7 +60,11 @@ router.post("/:shopID/:customerID/measurments/insert", insertNewMeasurement);
 router.put(
   "/:shopID/:customerID/measurments/:measurementID",
   updateMeasurement
-); // new customer.
+);
+router.delete(
+  "/:shopID/:customerID/measurments/:measurementID",
+  deleteMeasurement
+);
 
 // export default router;
 module.exports = router;

@@ -85,32 +85,42 @@ const updateMeasurement = async (req, res) => {
   }
 };
 
-// const deleteCustomer = async (req, res) => {
-//   try {
-//     const { shopID, customerID } = req.params;
+const deleteMeasurement = async (req, res) => {
+  try {
+    const { shopID, customerID, measurementID } = req.params;
 
-//     if (!ObjectId.isValid(shopID) || !ObjectId.isValid(customerID)) {
-//       return res.status(400).json({ message: "Invalid shop or customer ID" });
-//     }
+    // Validate IDs
+    if (
+      !mongoose.Types.ObjectId.isValid(shopID) ||
+      !mongoose.Types.ObjectId.isValid(customerID) ||
+      !mongoose.Types.ObjectId.isValid(measurementID)
+    ) {
+      return res.status(400).json({ message: "Invalid IDs!" });
+    }
 
-//     const shop = await Shops.findById(shopID);
-//     if (!shop || !shop.customers.includes(customerID)) {
-//       return res.status(404).json({ message: "Shop or customer not found" });
-//     }
+    // Find the shop
+    const shop = await Shops.findById(shopID);
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
 
-//     const deletedCustomer = await Customers.findByIdAndDelete(customerID);
-//     if (!deletedCustomer) {
-//       return res.status(404).json({ message: "Customer not found" });
-//     }
+    // Find the customer
+    const customer = await Customers.findById(customerID);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
 
-//     shop.customers.pull(customerID);
-//     await shop.save();
+    // Remove the measurement using pull
+    customer.measurements.pull({ _id: measurementID });
 
-//     res.status(200).json({ message: "Customer deleted successfully" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+    // Save the customer
+    await customer.save();
+
+    res.status(200).json({ message: "Measurement deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // const getAllShopcustomer = async (req, res) => {
 //   try {
@@ -121,60 +131,8 @@ const updateMeasurement = async (req, res) => {
 //   }
 // };
 
-// const findCustomersByName = async (req, res) => {
-//   try {
-//     const { shopID } = req.params;
-//     const { CustomerName } = req.body;
-
-//     // Validate shopID
-//     if (!mongoose.Types.ObjectId.isValid(shopID)) {
-//       return res.status(400).json({ message: "Invalid shopID!" });
-//     }
-
-//     const shop = await Shops.findById(shopID).populate("customers");
-//     if (!shop) {
-//       return res.status(404).json({ message: "Shop not found" });
-//     }
-
-//     // Find customers with matching name in the specific shop
-//     const matchingCustomers = shop.customers.filter((customer) =>
-//       customer.fullName.toLowerCase().includes(CustomerName.toLowerCase())
-//     );
-
-//     res.status(200).json(matchingCustomers);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
-// const findCustomersByPhoneNumber = async (req, res) => {
-//   try {
-//     const { shopID } = req.params;
-//     const { CustomerPhoneNumber } = req.body;
-
-//     // Validate shopID
-//     if (!mongoose.Types.ObjectId.isValid(shopID)) {
-//       return res.status(400).json({ message: "Invalid shopID!" });
-//     }
-
-//     const shop = await Shops.findById(shopID).populate("customers");
-//     if (!shop) {
-//       return res.status(404).json({ message: "Shop not found" });
-//     }
-
-//     // Find customers with matching name in the specific shop
-//     const matchingCustomer = shop.customers.find(
-//       (customer) => customer.phoneNumber === CustomerPhoneNumber
-//     );
-
-//     res.status(200).json(matchingCustomer);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
 module.exports = {
   insertNewMeasurement,
   updateMeasurement,
-  // deleteCustomer,
+  deleteMeasurement,
 };
