@@ -12,6 +12,8 @@ const {
   insertNewCustomer,
   updateCustomer,
   deleteCustomer,
+  findCustomersByName,
+  findCustomersByPhoneNumber,
 } = require("../controllers/customers");
 
 const { verifyToken } = require("../middleware/auth");
@@ -27,6 +29,11 @@ router.post("/:shopID/customers/insert", insertNewCustomer); // new customer.
 router.put("/:shopID/customers/:customerID", updateCustomer); // update a customer's info.
 router.delete("/:shopID/customers/:customerID", deleteCustomer); // delete a customer
 
+router.post("/:shopID/customers/findCustomerByName", findCustomersByName);
+router.post(
+  "/:shopID/customers/findCustomerByPhoneNumber",
+  findCustomersByPhoneNumber
+);
 // Create
 router.post("/create", createShop);
 

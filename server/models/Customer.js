@@ -92,15 +92,19 @@ const measurementSchema = new mongoose.Schema({
 });
 
 const customerSchema = new mongoose.Schema({
+  phoneNumber: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   fullName: {
     type: String,
     required: true,
   },
-  phoneNumber: {
-    type: String,
-    required: true,
+  measurements: {
+    type: [measurementSchema],
+    required: false,
   },
-  measurements: [measurementSchema],
 });
 
 const Customer = mongoose.model("Customer", customerSchema);

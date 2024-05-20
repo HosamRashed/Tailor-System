@@ -57,12 +57,11 @@ const insertNewCustomer = async (req, res) => {
 const updateCustomer = async (req, res) => {
   try {
     const { shopID, customerID } = req.params;
-    const { fullName, phoneNumber, measurements } = req.body;
+    const { fullName, phoneNumber } = req.body;
 
     if (!ObjectId.isValid(shopID) || !ObjectId.isValid(customerID)) {
       return res.status(400).json({ message: "Invalid shop or customer ID" });
     }
-
     const shop = await Shops.findById(shopID);
     if (!shop || !shop.customers.includes(customerID)) {
       return res.status(404).json({ message: "Shop or customer not found" });
@@ -70,7 +69,7 @@ const updateCustomer = async (req, res) => {
 
     const updatedCustomer = await Customers.findByIdAndUpdate(
       customerID,
-      { fullName, phoneNumber, measurements },
+      { fullName, phoneNumber },
       { new: true }
     );
 
@@ -111,8 +110,62 @@ const deleteCustomer = async (req, res) => {
   }
 };
 
+const findCustomersByName = async (req, res) => {
+  try {
+    const { shopID } = req.params;
+    const { name } = req.body;
+
+    // Validate shopID
+    if (!mongoose.Types.ObjectId.isValid(shopID)) {
+      return res.status(400).json({ message: "Invalid shopID!" });
+    }
+
+    const shop = await Shops.findById(shopID).populate("customers");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    // Find customers with matching name in the specific shop
+    const matchingCustomers = shop.customers.filter((customer) =>
+      customer.fullName.toLowerCase().includes(name.toLowerCase())
+    );
+
+    res.status(200).json(matchingCustomers);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const findCustomersByPhoneNumber = async (req, res) => {
+  try {
+    const { shopID } = req.params;
+    const { name } = req.body;
+
+    // Validate shopID
+    if (!mongoose.Types.ObjectId.isValid(shopID)) {
+      return res.status(400).json({ message: "Invalid shopID!" });
+    }
+
+    const shop = await Shops.findById(shopID).populate("customers");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    // Find customers with matching name in the specific shop
+    const matchingCustomers = shop.customers.filter((customer) =>
+      customer.fullName.toLowerCase().includes(name.toLowerCase())
+    );
+
+    res.status(200).json(matchingCustomers);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports = {
   insertNewCustomer,
   updateCustomer,
   deleteCustomer,
+  findCustomersByName,
+  findCustomersByPhoneNumber,
 };
