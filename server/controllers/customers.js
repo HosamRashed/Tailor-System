@@ -113,7 +113,7 @@ const deleteCustomer = async (req, res) => {
 const findCustomersByName = async (req, res) => {
   try {
     const { shopID } = req.params;
-    const { name } = req.body;
+    const { CustomerName } = req.body;
 
     // Validate shopID
     if (!mongoose.Types.ObjectId.isValid(shopID)) {
@@ -127,7 +127,7 @@ const findCustomersByName = async (req, res) => {
 
     // Find customers with matching name in the specific shop
     const matchingCustomers = shop.customers.filter((customer) =>
-      customer.fullName.toLowerCase().includes(name.toLowerCase())
+      customer.fullName.toLowerCase().includes(CustomerName.toLowerCase())
     );
 
     res.status(200).json(matchingCustomers);
@@ -139,7 +139,7 @@ const findCustomersByName = async (req, res) => {
 const findCustomersByPhoneNumber = async (req, res) => {
   try {
     const { shopID } = req.params;
-    const { name } = req.body;
+    const { CustomerPhoneNumber } = req.body;
 
     // Validate shopID
     if (!mongoose.Types.ObjectId.isValid(shopID)) {
@@ -152,11 +152,11 @@ const findCustomersByPhoneNumber = async (req, res) => {
     }
 
     // Find customers with matching name in the specific shop
-    const matchingCustomers = shop.customers.filter((customer) =>
-      customer.fullName.toLowerCase().includes(name.toLowerCase())
+    const matchingCustomer = shop.customers.find(
+      (customer) => customer.phoneNumber === CustomerPhoneNumber
     );
 
-    res.status(200).json(matchingCustomers);
+    res.status(200).json(matchingCustomer);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
