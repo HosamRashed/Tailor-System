@@ -17,7 +17,10 @@ const {
   getAllShopcustomer,
 } = require("../controllers/customers");
 
-const { insertNewMeasurement } = require("../controllers/measurement");
+const {
+  insertNewMeasurement,
+  updateMeasurement,
+} = require("../controllers/measurement");
 
 const { verifyToken } = require("../middleware/auth");
 
@@ -52,13 +55,10 @@ router.post(
 );
 
 // insert update delete measurments into a specific customer's info
-router.post(
-  "/:shopID/:customerID/measurments/insert",
-  insertNewMeasurement
-); // new customer.
-router.post(
-  "/:shopID/customers/:customerID/measurments/:measurmentID",
-  insertNewCustomer
+router.post("/:shopID/:customerID/measurments/insert", insertNewMeasurement);
+router.put(
+  "/:shopID/:customerID/measurments/:measurementID",
+  updateMeasurement
 ); // new customer.
 
 // export default router;

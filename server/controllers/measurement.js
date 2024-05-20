@@ -40,34 +40,50 @@ const insertNewMeasurement = async (req, res) => {
   }
 };
 
-// const updateCustomer = async (req, res) => {
-//   try {
-//     const { shopID, customerID } = req.params;
-//     const { fullName, phoneNumber } = req.body;
+const updateMeasurement = async (req, res) => {
+  try {
+    const { shopID, customerID, measurementID } = req.params;
+    const updatedMeasurement = req.body;
 
-//     if (!ObjectId.isValid(shopID) || !ObjectId.isValid(customerID)) {
-//       return res.status(400).json({ message: "Invalid shop or customer ID" });
-//     }
-//     const shop = await Shops.findById(shopID);
-//     if (!shop || !shop.customers.includes(customerID)) {
-//       return res.status(404).json({ message: "Shop or customer not found" });
-//     }
+    // Validate IDs
+    if (
+      !mongoose.Types.ObjectId.isValid(shopID) ||
+      !mongoose.Types.ObjectId.isValid(customerID) ||
+      !mongoose.Types.ObjectId.isValid(measurementID)
+    ) {
+      return res.status(400).json({ message: "Invalid IDs!" });
+    }
 
-//     const updatedCustomer = await Customers.findByIdAndUpdate(
-//       customerID,
-//       { fullName, phoneNumber },
-//       { new: true }
-//     );
+    // Find the shop
+    const shop = await Shops.findById(shopID);
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
 
-//     if (!updatedCustomer) {
-//       return res.status(404).json({ message: "Customer not found" });
-//     }
+    // Find the customer
+    const customer = await Customers.findById(customerID);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
 
-//     res.status(200).json(updatedCustomer);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+    // Convert measurementID to ObjectId
+    const measurementObjectId = new mongoose.Types.ObjectId(measurementID);
+
+    // Find and update the measurement
+    const measurement = customer.measurements.id(measurementObjectId);
+    if (!measurement) {
+      return res.status(404).json({ message: "Measurement not found" });
+    }
+
+    // Update the measurement fields
+    Object.assign(measurement, updatedMeasurement);
+    await customer.save();
+
+    res.status(200).json(customer);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // const deleteCustomer = async (req, res) => {
 //   try {
@@ -159,6 +175,6 @@ const insertNewMeasurement = async (req, res) => {
 
 module.exports = {
   insertNewMeasurement,
-  // updateCustomer,
+  updateMeasurement,
   // deleteCustomer,
 };
