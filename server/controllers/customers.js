@@ -110,6 +110,15 @@ const deleteCustomer = async (req, res) => {
   }
 };
 
+const getAllShopcustomer = async (req, res) => {
+  try {
+    const customers = await Customers.find();
+    res.status(200).json(customers);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
 const findCustomersByName = async (req, res) => {
   try {
     const { shopID } = req.params;
@@ -168,4 +177,5 @@ module.exports = {
   deleteCustomer,
   findCustomersByName,
   findCustomersByPhoneNumber,
+  getAllShopcustomer,
 };
