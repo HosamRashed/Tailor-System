@@ -122,17 +122,39 @@ const deleteMeasurement = async (req, res) => {
   }
 };
 
-// const getAllShopcustomer = async (req, res) => {
-//   try {
-//     const customers = await Customers.find();
-//     res.status(200).json(customers);
-//   } catch (err) {
-//     res.status(404).json({ message: err.message });
-//   }
-// };
+const getAllMeasurements = async (req, res) => {
+  try {
+    const { shopID, customerID } = req.params;
+
+    // Validate IDs
+    if (
+      !mongoose.Types.ObjectId.isValid(shopID) ||
+      !mongoose.Types.ObjectId.isValid(customerID)
+    ) {
+      return res.status(400).json({ message: "Invalid shopID or customerID!" });
+    }
+
+    // Find the shop
+    const shop = await Shops.findById(shopID);
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    // Find the customer
+    const customer = await Customers.findById(customerID);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    res.status(200).json(customer.measurements);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 module.exports = {
   insertNewMeasurement,
   updateMeasurement,
   deleteMeasurement,
+  getAllMeasurements,
 };

@@ -21,6 +21,7 @@ const {
   insertNewMeasurement,
   updateMeasurement,
   deleteMeasurement,
+  getAllMeasurements,
 } = require("../controllers/measurement");
 
 const { verifyToken } = require("../middleware/auth");
@@ -61,6 +62,7 @@ router.put(
   "/:shopID/:customerID/measurments/:measurementID",
   updateMeasurement
 );
+router.get("/:shopID/:customerID/measurments/", getAllMeasurements);
 router.delete(
   "/:shopID/:customerID/measurments/:measurementID",
   deleteMeasurement
