@@ -1,0 +1,164 @@
+// const Post = require("../models/Post.js");
+const Customers = require("../models/Customer.js");
+const Shops = require("../models/Shops.js");
+const Measurement = require("../models/Measurement.js");
+const { ObjectId } = require("mongodb"); // Import ObjectId to validate MongoDB IDs
+const mongoose = require("mongoose"); // Import mongoose
+
+/* CREATE */
+const insertNewMeasurement = async (req, res) => {
+  //   "/:shopID/customers/:customerID/measurments/insert",
+  try {
+    const { shopID, customerID } = req.params;
+    const measurementData = req.body;
+
+    // Validate IDs
+    if (
+      !mongoose.Types.ObjectId.isValid(shopID) ||
+      !mongoose.Types.ObjectId.isValid(customerID)
+    ) {
+      return res.status(400).json({ message: "Invalid shopID or customerID!" });
+    }
+
+    const shop = await Shops.findById(shopID);
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    const customer = await Customers.findById(customerID);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    const newMeasurement = new Measurement(measurementData);
+    customer.measurements.push(newMeasurement);
+    await customer.save();
+
+    res.status(201).json(newMeasurement);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// const updateCustomer = async (req, res) => {
+//   try {
+//     const { shopID, customerID } = req.params;
+//     const { fullName, phoneNumber } = req.body;
+
+//     if (!ObjectId.isValid(shopID) || !ObjectId.isValid(customerID)) {
+//       return res.status(400).json({ message: "Invalid shop or customer ID" });
+//     }
+//     const shop = await Shops.findById(shopID);
+//     if (!shop || !shop.customers.includes(customerID)) {
+//       return res.status(404).json({ message: "Shop or customer not found" });
+//     }
+
+//     const updatedCustomer = await Customers.findByIdAndUpdate(
+//       customerID,
+//       { fullName, phoneNumber },
+//       { new: true }
+//     );
+
+//     if (!updatedCustomer) {
+//       return res.status(404).json({ message: "Customer not found" });
+//     }
+
+//     res.status(200).json(updatedCustomer);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+// const deleteCustomer = async (req, res) => {
+//   try {
+//     const { shopID, customerID } = req.params;
+
+//     if (!ObjectId.isValid(shopID) || !ObjectId.isValid(customerID)) {
+//       return res.status(400).json({ message: "Invalid shop or customer ID" });
+//     }
+
+//     const shop = await Shops.findById(shopID);
+//     if (!shop || !shop.customers.includes(customerID)) {
+//       return res.status(404).json({ message: "Shop or customer not found" });
+//     }
+
+//     const deletedCustomer = await Customers.findByIdAndDelete(customerID);
+//     if (!deletedCustomer) {
+//       return res.status(404).json({ message: "Customer not found" });
+//     }
+
+//     shop.customers.pull(customerID);
+//     await shop.save();
+
+//     res.status(200).json({ message: "Customer deleted successfully" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+// const getAllShopcustomer = async (req, res) => {
+//   try {
+//     const customers = await Customers.find();
+//     res.status(200).json(customers);
+//   } catch (err) {
+//     res.status(404).json({ message: err.message });
+//   }
+// };
+
+// const findCustomersByName = async (req, res) => {
+//   try {
+//     const { shopID } = req.params;
+//     const { CustomerName } = req.body;
+
+//     // Validate shopID
+//     if (!mongoose.Types.ObjectId.isValid(shopID)) {
+//       return res.status(400).json({ message: "Invalid shopID!" });
+//     }
+
+//     const shop = await Shops.findById(shopID).populate("customers");
+//     if (!shop) {
+//       return res.status(404).json({ message: "Shop not found" });
+//     }
+
+//     // Find customers with matching name in the specific shop
+//     const matchingCustomers = shop.customers.filter((customer) =>
+//       customer.fullName.toLowerCase().includes(CustomerName.toLowerCase())
+//     );
+
+//     res.status(200).json(matchingCustomers);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+// const findCustomersByPhoneNumber = async (req, res) => {
+//   try {
+//     const { shopID } = req.params;
+//     const { CustomerPhoneNumber } = req.body;
+
+//     // Validate shopID
+//     if (!mongoose.Types.ObjectId.isValid(shopID)) {
+//       return res.status(400).json({ message: "Invalid shopID!" });
+//     }
+
+//     const shop = await Shops.findById(shopID).populate("customers");
+//     if (!shop) {
+//       return res.status(404).json({ message: "Shop not found" });
+//     }
+
+//     // Find customers with matching name in the specific shop
+//     const matchingCustomer = shop.customers.find(
+//       (customer) => customer.phoneNumber === CustomerPhoneNumber
+//     );
+
+//     res.status(200).json(matchingCustomer);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+module.exports = {
+  insertNewMeasurement,
+  // updateCustomer,
+  // deleteCustomer,
+};

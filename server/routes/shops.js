@@ -17,6 +17,8 @@ const {
   getAllShopcustomer,
 } = require("../controllers/customers");
 
+const { insertNewMeasurement } = require("../controllers/measurement");
+
 const { verifyToken } = require("../middleware/auth");
 
 const router = express.Router();
@@ -48,6 +50,16 @@ router.post(
   "/:shopID/customers/findCustomerByPhoneNumber",
   findCustomersByPhoneNumber
 );
+
+// insert update delete measurments into a specific customer's info
+router.post(
+  "/:shopID/:customerID/measurments/insert",
+  insertNewMeasurement
+); // new customer.
+router.post(
+  "/:shopID/customers/:customerID/measurments/:measurmentID",
+  insertNewCustomer
+); // new customer.
 
 // export default router;
 module.exports = router;
