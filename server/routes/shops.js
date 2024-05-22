@@ -44,7 +44,7 @@ router.get("/active_shops", getActive_shops);
 router.get("/:shopID", getSpecificShop);
 
 // insert update delete customers into the shop
-router.post("/:shopID/customers/insert", insertNewCustomer); // new customer.
+router.post("/:shopID/customers/insert", verifyToken, insertNewCustomer); // new customer.
 router.put("/:shopID/customers/:customerID", updateCustomer); // update a customer's info.
 router.delete("/:shopID/customers/:customerID", deleteCustomer); // delete a customer
 
