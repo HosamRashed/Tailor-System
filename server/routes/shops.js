@@ -24,43 +24,58 @@ const {
   getAllMeasurements,
 } = require("../controllers/measurement");
 
-const { verifyToken } = require("../middleware/auth");
+const { verifyToken, verifyTokenWeb } = require("../middleware/auth");
 
 const router = express.Router();
 
 /* UPDATE shop's info */
-router.patch("/:shopID/status", verifyToken, updateShopStatus); // add validation
+router.patch("/:shopID/status", verifyTokenWeb, updateShopStatus); // add validation
 
 /* Delete shop */
-router.delete("/:shopID", verifyToken, deleteShop);
+router.delete("/:shopID", verifyTokenWeb, deleteShop);
 
 /* retrieve existing shops */
-router.get("/", getShops);
-router.get("/active_shops", getActive_shops);
-router.get("/:shopID", getSpecificShop);
+router.get("/", verifyTokenWeb, getShops);
+router.get("/active_shops", verifyTokenWeb, getActive_shops);
+router.get("/:shopID", verifyTokenWeb, getSpecificShop); // web
 
 // insert update delete customers into the shop
 router.post("/:shopID/customers/insert", verifyToken, insertNewCustomer); // new customer.
-router.put("/:shopID/customers/:customerID", updateCustomer); // update a customer's info.
-router.delete("/:shopID/customers/:customerID", deleteCustomer); // delete a customer
+router.put("/:shopID/customers/:customerID", verifyToken, updateCustomer); // update a customer's info.
+router.delete("/:shopID/customers/:customerID", verifyToken, deleteCustomer); // delete a customer
 
 // retrieving shop's customers and their info
-router.get("/:shopID/customers/", getAllShopcustomer);
-router.post("/:shopID/customers/findCustomerByName", findCustomersByName);
+router.get("/:shopID/customers/", verifyToken, getAllShopcustomer);
+router.post(
+  "/:shopID/customers/findCustomerByName",
+  verifyToken,
+  findCustomersByName
+);
 router.post(
   "/:shopID/customers/findCustomerByPhoneNumber",
+  verifyToken,
   findCustomersByPhoneNumber
 );
 
 // insert update delete measurments into a specific customer's info
-router.post("/:shopID/:customerID/measurments/insert", insertNewMeasurement);
+router.post(
+  "/:shopID/:customerID/measurments/insert",
+  verifyToken,
+  insertNewMeasurement
+);
 router.put(
   "/:shopID/:customerID/measurments/:measurementID",
+  verifyToken,
   updateMeasurement
 );
-router.get("/:shopID/:customerID/measurments/", getAllMeasurements);
+router.get(
+  "/:shopID/:customerID/measurments/",
+  verifyToken,
+  getAllMeasurements
+);
 router.delete(
   "/:shopID/:customerID/measurments/:measurementID",
+  verifyToken,
   deleteMeasurement
 );
 
