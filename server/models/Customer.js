@@ -95,7 +95,7 @@ const customerSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
     required: true,
-    unique: true,
+    unique: false,
   },
   fullName: {
     type: String,

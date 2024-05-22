@@ -33,6 +33,21 @@ const insertNewCustomer = async (req, res) => {
         .json({ message: "Measurements must be an array of objects!" });
     }
 
+    // Check if the shop has any customers
+    if (shop.customers.length > 0) {
+      // Check if the customer already exists in the shop's customers list
+      const existingCustomer = shop.customers.find(
+        (customer) => customer.phoneNumber === phoneNumber
+      );
+      if (existingCustomer) {
+        return res
+          .status(409)
+          .json({
+            message: "Customer already exists in the shop's customers list",
+          });
+      }
+    }
+
     const newCustomer = new Customers({
       fullName,
       phoneNumber,

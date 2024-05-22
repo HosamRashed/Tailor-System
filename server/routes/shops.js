@@ -28,15 +28,11 @@ const { verifyToken } = require("../middleware/auth");
 
 const router = express.Router();
 
-/* Create new shop */
-router.post("/create", createShop);
-
 /* UPDATE shop's info */
-router.patch("/:shopID/status", updateShopStatus); // add validation
-// router.patch("/", verifyToken, likePost);
+router.patch("/:shopID/status", verifyToken, updateShopStatus); // add validation
 
 /* Delete shop */
-router.delete("/:shopID", deleteShop);
+router.delete("/:shopID", verifyToken, deleteShop);
 
 /* retrieve existing shops */
 router.get("/", getShops);
