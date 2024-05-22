@@ -8,10 +8,11 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const path = require("path");
 // const { fileURLToPath } = require("url");
-// const authRoutes = require("./routes/auth.js");
+const authRoutes = require("./routes/auth.js");
 // const userRoutes = require("./routes/users.js");
 // const postRoutes = require("./routes/posts.js");
 const shopsRoutes = require("./routes/shops.js");
+const { createShop } = require("./controllers/auth.js");
 // const { register } = require("./controllers/auth.js");
 // const { createPost } = require("./controllers/posts.js");
 // const { verifyToken } = require("./middleware/auth.js");
@@ -49,7 +50,10 @@ app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 // app.post("/posts", verifyToken, upload.single("picture"), createPost);
 
 // /* ROUTES */
+app.use("/auth", authRoutes);
 app.use("/shops", shopsRoutes);
+app.post("/auth/createShop", createShop);
+// app.post("/auth/register", register);
 // app.use("/auth", authRoutes);
 // app.use("/custumers", postRoutes);
 

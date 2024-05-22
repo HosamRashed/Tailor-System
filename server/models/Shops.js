@@ -3,9 +3,8 @@ const Customers = require("./Customer");
 
 const shopsSchema = mongoose.Schema(
   {
-    status: {
+    shopStatus: {
       type: Boolean,
-      required: true,
       default: true,
     },
     shopName: {
@@ -17,6 +16,11 @@ const shopsSchema = mongoose.Schema(
       required: true,
       unique: true,
     },
+    shopPassword: {
+      type: String,
+      required: true,
+      min: 6,
+    },
     shopAddress: {
       type: String,
       required: true,
@@ -25,6 +29,7 @@ const shopsSchema = mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Customer",
+        default: [],
       },
     ],
   },

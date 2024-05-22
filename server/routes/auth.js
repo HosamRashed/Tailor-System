@@ -1,8 +1,10 @@
-// const express = require("express");
-// const { login } = require("../controllers/auth.j");
+const express = require("express");
+const { loginShop } = require("../controllers/auth.js");
+// const { loginAdmin } = require("../controllers/auth.js");
 
-// const router = express.Router();
+const router = express.Router();
 
-// router.post("/login", login);
+router.post("/loginShop", loginShop);
+// router.post("/loginAdmin", loginAdmin);
 
-// module.exports = router;
+module.exports = router;
