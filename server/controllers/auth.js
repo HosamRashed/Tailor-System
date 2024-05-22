@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Shops = require("../models/Shops.js");
+const User = require("../models/User.js");
 
 // /* create a shop */
 const createShop = async (req, res) => {
@@ -39,42 +40,6 @@ const createShop = async (req, res) => {
   }
 };
 
-// /* create admin account */
-// export const register = async (req, res) => {
-//   try {
-//     const {
-//       firstName,
-//       lastName,
-//       email,
-//       password,
-//       picturePath,
-//       friends,
-//       location,
-//       occupation,
-//     } = req.body;
-
-//     const salt = await bcrypt.genSalt();
-//     const passwordHash = await bcrypt.hash(password, salt);
-
-//     const newUser = new User({
-//       firstName,
-//       lastName,
-//       email,
-//       password: passwordHash,
-//       picturePath,
-//       friends,
-//       location,
-//       occupation,
-//       viewedProfile: Math.floor(Math.random() * 10000),
-//       impressions: Math.floor(Math.random() * 10000),
-//     });
-//     const savedUser = await newUser.save();
-//     res.status(201).json(savedUser);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
 /* Shop LOGGING IN */
 const loginShop = async (req, res) => {
   try {
@@ -93,7 +58,53 @@ const loginShop = async (req, res) => {
   }
 };
 
+const registerAdmin = async (req, res) => {
+  try {
+    const { email, password, phoneNumber } = req.body;
+
+    const salt = await bcrypt.genSalt();
+    const passwordhash = await bcrypt.hash(password, salt);
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({
+        message: "there is another User with the same email",
+      });
+    }
+    const newUser = new User({
+      email,
+      password: passwordhash,
+      phoneNumber,
+    });
+
+    const savedUser = await newUser.save();
+    res.status(201).json(savedUser);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email: email });
+
+    if (!user) res.status(400).json({ error: "user not found" });
+
+    const correctPass = await bcrypt.compare(password, user.password);
+    if (!correctPass) res.status(400).json({ error: "invalid credintials" });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRETAdmin);
+    delete user.password;
+    res.status(200).json({ token, user });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   createShop,
   loginShop,
+  registerAdmin,
+  loginAdmin,
 };
