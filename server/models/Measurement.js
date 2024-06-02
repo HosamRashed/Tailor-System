@@ -14,18 +14,6 @@ const measurementSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
-  totalPrice: {
-    type: Number,
-    default: 0,
-  },
-  partialPaid: {
-    type: Number,
-    default: 0,
-  },
-  paymentCompleted: {
-    type: Boolean,
-    default: false,
-  },
   height: {
     type: Number,
     required: true,

@@ -24,6 +24,8 @@ const {
   getAllMeasurements,
 } = require("../controllers/measurement");
 
+const { insertNewTrader } = require("../controllers/trader");
+
 const { verifyToken, verifyTokenWeb } = require("../middleware/auth");
 
 const router = express.Router();
@@ -36,48 +38,59 @@ router.delete("/:shopID", verifyTokenWeb, deleteShop);
 
 /* retrieve existing shops */
 router.get("/", verifyTokenWeb, getShops);
-router.get("/active_shops", verifyTokenWeb, getActive_shops);
-router.get("/:shopID", verifyTokenWeb, getSpecificShop); // web
+router.get("/active_shops", getActive_shops);
+router.get("/:shopID", getSpecificShop); // web
 
 // insert update delete customers into the shop
-router.post("/:shopID/customers/insert", verifyToken, insertNewCustomer); // new customer.
-router.put("/:shopID/customers/:customerID", verifyToken, updateCustomer); // update a customer's info.
-router.delete("/:shopID/customers/:customerID", verifyToken, deleteCustomer); // delete a customer
+router.post("/:shopID/customers/insert", insertNewCustomer); // new customer.
+router.put("/:shopID/customers/:customerID", updateCustomer); // update a customer's info.
+router.delete("/:shopID/customers/:customerID", deleteCustomer); // delete a customer
 
 // retrieving shop's customers and their info
-router.get("/:shopID/customers/", verifyToken, getAllShopcustomer);
-router.post(
-  "/:shopID/customers/findCustomerByName",
-  verifyToken,
-  findCustomersByName
-);
+router.get("/:shopID/customers/", getAllShopcustomer);
+router.post("/:shopID/customers/findCustomerByName", findCustomersByName);
 router.post(
   "/:shopID/customers/findCustomerByPhoneNumber",
-  verifyToken,
   findCustomersByPhoneNumber
 );
 
 // insert update delete measurments into a specific customer's info
-router.post(
-  "/:shopID/:customerID/measurments/insert",
-  verifyToken,
-  insertNewMeasurement
-);
+router.post("/:shopID/:customerID/measurments/insert", insertNewMeasurement);
 router.put(
   "/:shopID/:customerID/measurments/:measurementID",
-  verifyToken,
+
   updateMeasurement
 );
-router.get(
-  "/:shopID/:customerID/measurments/",
-  verifyToken,
-  getAllMeasurements
-);
+router.get("/:shopID/:customerID/measurments/", getAllMeasurements);
 router.delete(
   "/:shopID/:customerID/measurments/:measurementID",
-  verifyToken,
   deleteMeasurement
 );
+
+// shops' traders
+router.post("/:shopID/traders/insert", insertNewTrader); // new customer.
+// router.get(":shopID/traders/", verifyTokenWeb, getTraders);
+// router.get(":shopID/traders/:traderID", verifyTokenWeb, getTrader);
+// router.put("/:shopID/traders/:traderID", verifyToken, updateTrader); // update a customer's info.
+// router.delete("/:shopID/traders/:traderID", verifyToken, deleteTrader); // delete a customer
+
+// // insert update delete measurments into a specific trader's info
+// router.post(
+//   "/:shopID/:traderID/payements/insert",
+//   verifyToken,
+//   insertNewPayment
+// );
+// router.put(
+//   "/:shopID/:traderID/payments/:paymentID",
+//   verifyToken,
+//   updatepayment
+// );
+// router.get("/:shopID/:traderID/payments/", verifyToken, getAllPayments);
+// router.delete(
+//   "/:shopID/:traderID/payments/:paymentID",
+//   verifyToken,
+//   deletePayment
+// );
 
 // export default router;
 module.exports = router;

@@ -17,8 +17,7 @@ const insertNewCustomer = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(shopID)) {
       return res.status(400).json({ message: "Invalid shopID!" });
     }
-
-    const shop = await Shops.findById(shopID);
+    const shop = await Shops.findById(shopID).populate("customers");
     if (!shop) {
       return res.status(404).json({ message: "Shop not found" });
     }
@@ -34,17 +33,19 @@ const insertNewCustomer = async (req, res) => {
     }
 
     // Check if the shop has any customers
+    console.log(shop.customers.length > 0);
     if (shop.customers.length > 0) {
+      console.log("inside");
       // Check if the customer already exists in the shop's customers list
+      console.log(shop.customers[0]);
+
       const existingCustomer = shop.customers.find(
         (customer) => customer.phoneNumber === phoneNumber
       );
       if (existingCustomer) {
-        return res
-          .status(409)
-          .json({
-            message: "Customer already exists in the shop's customers list",
-          });
+        return res.status(409).json({
+          message: "Customer already exists in the shop's customers list",
+        });
       }
     }
 

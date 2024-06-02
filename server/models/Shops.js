@@ -32,6 +32,13 @@ const shopsSchema = mongoose.Schema(
         default: [],
       },
     ],
+    traders: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Trader",
+        default: [],
+      },
+    ],
   },
   { timestamps: true }
 );
