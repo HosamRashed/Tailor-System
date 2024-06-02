@@ -41,6 +41,37 @@ const insertNewTrader = async (req, res) => {
   }
 };
 
+const updateTrader = async (req, res) => {
+  try {
+    const { shopID, traderID } = req.params;
+    const { name, phoneNumber, moneyAmount } = req.body;
+
+    if (!ObjectId.isValid(shopID) || !ObjectId.isValid(traderID)) {
+      return res.status(400).json({ message: "Invalid shop or trader ID" });
+    }
+    const shop = await Shops.findById(shopID);
+    if (!shop || !shop.traders.includes(traderID)) {
+      return res.status(404).json({ message: "Shop or trader not found" });
+    }
+
+    const updatedTrader = await Trader.findByIdAndUpdate(
+      traderID,
+      { name, phoneNumber, moneyAmount },
+      { new: true }
+    );
+
+    if (!updatedTrader) {
+      return res
+        .status(404)
+        .json({ message: "Trader not found in the database" });
+    }
+
+    res.status(200).json(updatedTrader);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 const deleteTrader = async (req, res) => {
   try {
     const { shopID, traderID } = req.params;
@@ -217,6 +248,7 @@ const deleteTrader = async (req, res) => {
 module.exports = {
   insertNewTrader,
   deleteTrader,
+  updateTrader,
   //   updateMeasurement,
   //   deleteMeasurement,
   //   getAllMeasurements,
