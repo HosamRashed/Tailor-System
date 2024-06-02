@@ -24,7 +24,7 @@ const {
   getAllMeasurements,
 } = require("../controllers/measurement");
 
-const { insertNewTrader } = require("../controllers/trader");
+const { insertNewTrader, deleteTrader } = require("../controllers/trader");
 
 const { verifyToken, verifyTokenWeb } = require("../middleware/auth");
 
@@ -69,10 +69,10 @@ router.delete(
 
 // shops' traders
 router.post("/:shopID/traders/insert", insertNewTrader); // new customer.
+router.delete("/:shopID/traders/:traderID", deleteTrader); // delete a trader
+// router.put("/:shopID/traders/:traderID", updateTrader); // update a trader's info.
 // router.get(":shopID/traders/", verifyTokenWeb, getTraders);
 // router.get(":shopID/traders/:traderID", verifyTokenWeb, getTrader);
-// router.put("/:shopID/traders/:traderID", verifyToken, updateTrader); // update a customer's info.
-// router.delete("/:shopID/traders/:traderID", verifyToken, deleteTrader); // delete a customer
 
 // // insert update delete measurments into a specific trader's info
 // router.post(

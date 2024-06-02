@@ -7,7 +7,7 @@ const mongoose = require("mongoose"); // Import mongoose
 const insertNewTrader = async (req, res) => {
   try {
     const { shopID } = req.params;
-    const { name, phoneNumber, moneyAmount } = req.body;
+    const { name, phoneNumber, moneyAmount, payments = [] } = req.body;
 
     // Validate shopID
     if (!mongoose.Types.ObjectId.isValid(shopID)) {
@@ -23,6 +23,7 @@ const insertNewTrader = async (req, res) => {
       name,
       phoneNumber,
       moneyAmount,
+      payments,
     });
 
     // Insert the new customer into the database
@@ -35,6 +36,33 @@ const insertNewTrader = async (req, res) => {
     await shop.save();
 
     res.status(201).json(newTrader);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const deleteTrader = async (req, res) => {
+  try {
+    const { shopID, traderID } = req.params;
+
+    if (!ObjectId.isValid(shopID) || !ObjectId.isValid(traderID)) {
+      return res.status(400).json({ message: "Invalid shop or customer ID" });
+    }
+
+    const shop = await Shops.findById(shopID);
+    if (!shop || !shop.traders.includes(traderID)) {
+      return res.status(404).json({ message: "Shop or trader not found" });
+    }
+
+    const deletedTrader = await Trader.findByIdAndDelete(traderID);
+    if (!deletedTrader) {
+      return res.status(404).json({ message: "Trader not found" });
+    }
+
+    shop.traders.pull(traderID);
+    await shop.save();
+
+    res.status(200).json({ message: "Trader deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -188,6 +216,7 @@ const insertNewTrader = async (req, res) => {
 
 module.exports = {
   insertNewTrader,
+  deleteTrader,
   //   updateMeasurement,
   //   deleteMeasurement,
   //   getAllMeasurements,
