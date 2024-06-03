@@ -77,7 +77,7 @@ router.post("/:shopID/traders/insert", insertNewTrader); // new customer.
 router.delete("/:shopID/traders/:traderID", deleteTrader); // delete a trader
 router.patch("/:shopID/traders/:traderID", updateTrader); // update a trader's info.
 router.get("/:shopID/traders/", getTraders);
-// router.get(":shopID/traders/:traderID", getTrader);
+router.get("/:shopID/traders/:traderID", getTrader);
 
 // // insert update delete measurments into a specific trader's info
 // router.post(

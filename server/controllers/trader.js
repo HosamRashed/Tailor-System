@@ -120,6 +120,40 @@ const getTraders = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+const getTrader = async (req, res) => {
+  try {
+    const { shopID, traderID } = req.params;
+
+    // Validate shopID
+    if (!mongoose.Types.ObjectId.isValid(shopID)) {
+      return res.status(400).json({ message: "Invalid shopID!" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(traderID)) {
+      return res.status(400).json({ message: "Invalid traderID!" });
+    }
+
+    const shop = await Shops.findById(shopID).populate("traders");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    // Find trader with matching traderID in the specific shop
+    const matchedTrader = shop.traders.find(
+      (trader) => trader._id.toString() === traderID
+    );
+
+    if (!matchedTrader) {
+      return res.status(404).json({ message: "Trader not found" });
+    }
+
+    res.status(200).json(matchedTrader);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // const insertNewPayment = async (req, res) => {
 //   //   "/:shopID/customers/:customerID/measurments/insert",
 //   try {
@@ -271,8 +305,5 @@ module.exports = {
   deleteTrader,
   updateTrader,
   getTraders,
-  // getTrader,
-  //   updateMeasurement,
-  //   deleteMeasurement,
-  //   getAllMeasurements,
+  getTrader,
 };
