@@ -99,6 +99,27 @@ const deleteTrader = async (req, res) => {
   }
 };
 
+const getTraders = async (req, res) => {
+  try {
+    const { shopID } = req.params;
+
+    // Validate shopID
+    if (!mongoose.Types.ObjectId.isValid(shopID)) {
+      return res.status(400).json({ message: "Invalid shopID!" });
+    }
+
+    // Find the shop by ID and populate the traders
+    const shop = await Shops.findById(shopID).populate("traders");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    // Return the traders array
+    res.status(200).json(shop.traders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 // const insertNewPayment = async (req, res) => {
 //   //   "/:shopID/customers/:customerID/measurments/insert",
 //   try {
@@ -249,6 +270,8 @@ module.exports = {
   insertNewTrader,
   deleteTrader,
   updateTrader,
+  getTraders,
+  // getTrader,
   //   updateMeasurement,
   //   deleteMeasurement,
   //   getAllMeasurements,

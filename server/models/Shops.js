@@ -35,7 +35,7 @@ const shopsSchema = mongoose.Schema(
     traders: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Trader",
+        ref: "Traders",
         default: [],
       },
     ],
