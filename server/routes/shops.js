@@ -29,6 +29,9 @@ const {
   updateTrader,
   getTrader,
   getTraders,
+  insertPayment,
+  updatePayment,
+  deletePayment,
 } = require("../controllers/trader");
 
 const { verifyToken, verifyTokenWeb } = require("../middleware/auth");
@@ -78,6 +81,11 @@ router.delete("/:shopID/traders/:traderID", deleteTrader); // delete a trader
 router.patch("/:shopID/traders/:traderID", updateTrader); // update a trader's info.
 router.get("/:shopID/traders/", getTraders);
 router.get("/:shopID/traders/:traderID", getTrader);
+
+// shops' traders payments
+router.post("/:shopID/traders/:traderID/insert", insertPayment); // new customer.
+router.put("/:shopID/traders/:traderID/:paymentID", updatePayment); // new customer.
+router.delete("/:shopID/traders/:traderID/:paymentID", deletePayment); // new customer.
 
 // // insert update delete measurments into a specific trader's info
 // router.post(

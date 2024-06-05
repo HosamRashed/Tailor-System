@@ -154,151 +154,139 @@ const getTrader = async (req, res) => {
   }
 };
 
-// const insertNewPayment = async (req, res) => {
-//   //   "/:shopID/customers/:customerID/measurments/insert",
-//   try {
-//     const { shopID, traderID } = req.params;
-//     const paymentData = req.body;
+const insertPayment = async (req, res) => {
+  try {
+    const { shopID, traderID } = req.params;
+    const { paymentAmount, notes } = req.body;
 
-//     // Validate IDs
-//     if (
-//       !mongoose.Types.ObjectId.isValid(shopID) ||
-//       !mongoose.Types.ObjectId.isValid(traderID)
-//     ) {
-//       return res.status(400).json({ message: "Invalid shopID or traderID!" });
-//     }
+    // Validate IDs
+    if (
+      !mongoose.Types.ObjectId.isValid(shopID) ||
+      !mongoose.Types.ObjectId.isValid(traderID)
+    ) {
+      return res.status(400).json({ message: "Invalid ID!" });
+    }
 
-//     const shop = await Shops.findById(shopID);
-//     if (!shop) {
-//       return res.status(404).json({ message: "Shop not found" });
-//     }
+    const shop = await Shops.findById(shopID).populate("traders");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
 
-//     const trader = await Customers.findById(customerID);
-//     if (!customer) {
-//       return res.status(404).json({ message: "Customer not found" });
-//     }
+    const trader = shop.traders.find(
+      (trader) => trader._id.toString() === traderID
+    );
+    if (!trader) {
+      return res.status(404).json({ message: "Trader not found" });
+    }
 
-//     const newMeasurement = new Measurement(measurementData);
-//     customer.measurements.push(newMeasurement);
-//     await customer.save();
+    trader.payments.push({
+      paymentAmount,
+      notes,
+      date: new Date(),
+    });
 
-//     res.status(201).json(newMeasurement);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+    await trader.save();
+    res.status(201).json(trader);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-// const updateMeasurement = async (req, res) => {
-//   try {
-//     const { shopID, customerID, measurementID } = req.params;
-//     const updatedMeasurement = req.body;
+const updatePayment = async (req, res) => {
+  try {
+    const { shopID, traderID, paymentID } = req.params;
+    const { paymentAmount, notes } = req.body;
 
-//     // Validate IDs
-//     if (
-//       !mongoose.Types.ObjectId.isValid(shopID) ||
-//       !mongoose.Types.ObjectId.isValid(customerID) ||
-//       !mongoose.Types.ObjectId.isValid(measurementID)
-//     ) {
-//       return res.status(400).json({ message: "Invalid IDs!" });
-//     }
+    // Validate IDs
+    if (
+      !mongoose.Types.ObjectId.isValid(shopID) ||
+      !mongoose.Types.ObjectId.isValid(traderID) ||
+      !mongoose.Types.ObjectId.isValid(paymentID)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid shop, trader, or payment ID" });
+    }
 
-//     // Find the shop
-//     const shop = await Shops.findById(shopID);
-//     if (!shop) {
-//       return res.status(404).json({ message: "Shop not found" });
-//     }
+    // Find the shop and populate the traders
+    const shop = await Shops.findById(shopID).populate("traders");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
 
-//     // Find the customer
-//     const customer = await Customers.findById(customerID);
-//     if (!customer) {
-//       return res.status(404).json({ message: "Customer not found" });
-//     }
+    // Find the trader within the shop
+    const trader = shop.traders.find(
+      (trader) => trader._id.toString() === traderID
+    );
+    if (!trader) {
+      return res.status(404).json({ message: "Trader not found" });
+    }
 
-//     // Convert measurementID to ObjectId
-//     const measurementObjectId = new mongoose.Types.ObjectId(measurementID);
+    // Find the payment within the trader's payments array
+    const payment = trader.payments.id(paymentID);
+    if (!payment) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
 
-//     // Find and update the measurement
-//     const measurement = customer.measurements.id(measurementObjectId);
-//     if (!measurement) {
-//       return res.status(404).json({ message: "Measurement not found" });
-//     }
+    // Update the payment fields
+    if (paymentAmount !== undefined) payment.paymentAmount = paymentAmount;
+    if (notes !== undefined) payment.notes = notes;
 
-//     // Update the measurement fields
-//     Object.assign(measurement, updatedMeasurement);
-//     await customer.save();
+    // Save the updated trader
+    await trader.save();
 
-//     res.status(200).json(customer);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+    res.status(200).json(payment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-// const deleteMeasurement = async (req, res) => {
-//   try {
-//     const { shopID, customerID, measurementID } = req.params;
+const deletePayment = async (req, res) => {
+  try {
+    const { shopID, traderID, paymentID } = req.params;
 
-//     // Validate IDs
-//     if (
-//       !mongoose.Types.ObjectId.isValid(shopID) ||
-//       !mongoose.Types.ObjectId.isValid(customerID) ||
-//       !mongoose.Types.ObjectId.isValid(measurementID)
-//     ) {
-//       return res.status(400).json({ message: "Invalid IDs!" });
-//     }
+    // Validate IDs
+    if (
+      !mongoose.Types.ObjectId.isValid(shopID) ||
+      !mongoose.Types.ObjectId.isValid(traderID) ||
+      !mongoose.Types.ObjectId.isValid(paymentID)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid shop, trader, or payment ID" });
+    }
 
-//     // Find the shop
-//     const shop = await Shops.findById(shopID);
-//     if (!shop) {
-//       return res.status(404).json({ message: "Shop not found" });
-//     }
+    // Find the shop and populate the traders
+    const shop = await Shops.findById(shopID).populate("traders");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
 
-//     // Find the customer
-//     const customer = await Customers.findById(customerID);
-//     if (!customer) {
-//       return res.status(404).json({ message: "Customer not found" });
-//     }
+    // Find the trader within the shop
+    const trader = shop.traders.find(
+      (trader) => trader._id.toString() === traderID
+    );
+    if (!trader) {
+      return res.status(404).json({ message: "Trader not found" });
+    }
 
-//     // Remove the measurement using pull
-//     customer.measurements.pull({ _id: measurementID });
+    // Find the payment within the trader's payments array
+    const payment = trader.payments.id(paymentID);
+    if (!payment) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
 
-//     // Save the customer
-//     await customer.save();
+    // Remove the payment
+    trader.payments.pull(paymentID);
 
-//     res.status(200).json({ message: "Measurement deleted successfully" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+    // Save the updated trader
+    await trader.save();
 
-// const getAllMeasurements = async (req, res) => {
-//   try {
-//     const { shopID, customerID } = req.params;
-
-//     // Validate IDs
-//     if (
-//       !mongoose.Types.ObjectId.isValid(shopID) ||
-//       !mongoose.Types.ObjectId.isValid(customerID)
-//     ) {
-//       return res.status(400).json({ message: "Invalid shopID or customerID!" });
-//     }
-
-//     // Find the shop
-//     const shop = await Shops.findById(shopID);
-//     if (!shop) {
-//       return res.status(404).json({ message: "Shop not found" });
-//     }
-
-//     // Find the customer
-//     const customer = await Customers.findById(customerID);
-//     if (!customer) {
-//       return res.status(404).json({ message: "Customer not found" });
-//     }
-
-//     res.status(200).json(customer.measurements);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+    res.status(200).json({ message: "Payment deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 module.exports = {
   insertNewTrader,
@@ -306,4 +294,7 @@ module.exports = {
   updateTrader,
   getTraders,
   getTrader,
+  insertPayment,
+  updatePayment,
+  deletePayment,
 };
