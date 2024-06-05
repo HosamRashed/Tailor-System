@@ -23,6 +23,7 @@ const insertNewTrader = async (req, res) => {
       name,
       phoneNumber,
       moneyAmount,
+      remainingAmount: moneyAmount,
       payments,
     });
 
@@ -185,6 +186,8 @@ const insertPayment = async (req, res) => {
       date: new Date(),
     });
 
+    trader.remainingAmount -= paymentAmount;
+
     await trader.save();
     res.status(201).json(trader);
   } catch (err) {
@@ -208,7 +211,7 @@ const updatePayment = async (req, res) => {
         .json({ message: "Invalid shop, trader, or payment ID" });
     }
 
-    // Find the shop and populate the traders
+    // Find the shop and populate its traders
     const shop = await Shops.findById(shopID).populate("traders");
     if (!shop) {
       return res.status(404).json({ message: "Shop not found" });
@@ -222,20 +225,33 @@ const updatePayment = async (req, res) => {
       return res.status(404).json({ message: "Trader not found" });
     }
 
-    // Find the payment within the trader's payments array
+    // Find the specific payment within the trader's payments array
     const payment = trader.payments.id(paymentID);
     if (!payment) {
       return res.status(404).json({ message: "Payment not found" });
     }
 
-    // Update the payment fields
-    if (paymentAmount !== undefined) payment.paymentAmount = paymentAmount;
-    if (notes !== undefined) payment.notes = notes;
+    // Calculate the difference between the old and new payment amounts
+    const oldPaymentAmount = payment.paymentAmount;
+    const difference = oldPaymentAmount - paymentAmount;
+
+    // Update the payment details
+    payment.paymentAmount = paymentAmount;
+    payment.notes = notes || payment.notes;
+
+    // Adjust the remaining amount based on whether the new amount is more or less
+    if (difference > 0) {
+      // New payment amount is less than old payment amount
+      trader.remainingAmount += difference;
+    } else if (difference < 0) {
+      // New payment amount is more than old payment amount
+      trader.remainingAmount -= Math.abs(difference);
+    }
 
     // Save the updated trader
     await trader.save();
 
-    res.status(200).json(payment);
+    res.status(200).json({ message: "Payment updated successfully", trader });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -276,13 +292,14 @@ const deletePayment = async (req, res) => {
       return res.status(404).json({ message: "Payment not found" });
     }
 
+    trader.remainingAmount += payment.paymentAmount;
     // Remove the payment
     trader.payments.pull(paymentID);
 
     // Save the updated trader
     await trader.save();
 
-    res.status(200).json({ message: "Payment deleted successfully" });
+    res.status(200).json({ message: "Payment deleted successfully", trader });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -20,6 +20,10 @@ const tradersSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  remainingAmount: {
+    type: Number,
+    required: true,
+  },
   payments: {
     type: [paymentSchema],
     default: [], // Default to an empty array
