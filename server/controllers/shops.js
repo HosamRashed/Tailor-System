@@ -48,10 +48,16 @@ const getShops = async (req, res) => {
 const getSpecificShop = async (req, res) => {
   try {
     const { shopID } = req.params;
-    const shop = await Shops.find({ shopID });
+    const shop = await Shops.findById(shopID);
+
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    console.log(shop);
     res.status(200).json(shop);
   } catch (err) {
-    res.status(404).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 

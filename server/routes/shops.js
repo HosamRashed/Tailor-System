@@ -66,7 +66,6 @@ router.post(
 router.post("/:shopID/:customerID/measurments/insert", insertNewMeasurement);
 router.put(
   "/:shopID/:customerID/measurments/:measurementID",
-
   updateMeasurement
 );
 router.get("/:shopID/:customerID/measurments/", getAllMeasurements);

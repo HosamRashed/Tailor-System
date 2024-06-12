@@ -39,6 +39,13 @@ const shopsSchema = mongoose.Schema(
         default: [],
       },
     ],
+    thoabs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Measurement",
+        default: [],
+      },
+    ],
   },
   { timestamps: true }
 );

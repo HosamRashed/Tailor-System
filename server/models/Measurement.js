@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const measurementSchema = new mongoose.Schema({
   status: {
     type: Boolean,
-    required: true,
     default: false,
   },
+  pageNumber: { type: Number },
+  submissionDate: { type: Date },
   date: {
     type: Date,
-    required: true,
   },
   numberOfThoabs: {
     type: Number,
@@ -16,11 +16,9 @@ const measurementSchema = new mongoose.Schema({
   },
   height: {
     type: Number,
-    required: true,
   },
   shoulder: {
     type: Number,
-    required: true,
   },
   arm: {
     length: {
@@ -46,37 +44,29 @@ const measurementSchema = new mongoose.Schema({
   },
   bodyWidth: {
     type: Number,
-    required: true,
   },
   chestWidth: {
     type: Number,
-    required: true,
   },
   bottomThobWidth: {
     type: Number,
-    required: true,
   },
   neck: {
     typeOfNeck: {
       type: String,
-      required: true,
     },
     width: {
       type: Number,
-      required: true,
     },
     height: {
       type: Number,
-      required: true,
     },
   },
   jbjorHeight: {
     type: Number,
-    required: true,
   },
   additionalRequirements: {
     type: String,
-    required: true,
   },
 });
 

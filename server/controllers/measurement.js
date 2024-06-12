@@ -31,8 +31,13 @@ const insertNewMeasurement = async (req, res) => {
     }
 
     const newMeasurement = new Measurement(measurementData);
-    customer.measurements.push(newMeasurement);
+
+    customer.measurements.push(newMeasurement._id);
+    shop.thoabs.push(newMeasurement._id);
+
     await customer.save();
+    await shop.save();
+    await newMeasurement.save();
 
     res.status(201).json(newMeasurement);
   } catch (err) {
