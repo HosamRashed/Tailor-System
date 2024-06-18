@@ -9,20 +9,18 @@ import {
   Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { COLORS } from "../constants";
 import { Stack, useRouter } from "expo-router";
 
 // Get the screen dimensions
 const { width, height } = Dimensions.get("window");
 
-const Home = () => {
+const Support = () => {
   const router = useRouter();
 
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen
         options={{
-          headerStyle: { backgroundColor: COLORS.lightWhite },
           headerShadowVisible: false,
           headerTitle: "",
         }}
@@ -74,7 +72,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.lightWhite,
     paddingHorizontal: width * 0.02, // Responsive padding
   },
   buttonContainer: {
@@ -117,4 +114,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default Support;
