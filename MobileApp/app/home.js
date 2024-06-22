@@ -8,15 +8,20 @@ import {
   Dimensions,
   Platform,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter, Stack } from "expo-router";
+
 import { COLORS } from "../constants";
-import { Stack, useRouter } from "expo-router";
 
 // Get the screen dimensions
 const { width, height } = Dimensions.get("window");
 
 const Home = () => {
   const router = useRouter();
+
+  // Handle navigation to specific routes
+  const navigateTo = (routeName) => {
+    router.push(routeName);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,38 +35,38 @@ const Home = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push(`/NewCustomer/`)}
+          onPress={() => navigateTo("/NewCustomer/NewCustomer")}
         >
           <Text style={styles.buttonText}>زبون جديد</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push(`/AddMeasurement/`)}
+          onPress={() => navigateTo("AddMeasurement")}
         >
           <Text style={styles.buttonText}>اضافة مقاس جديد</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push(`/SearchCustomer/`)}
+          onPress={() => navigateTo("SearchCustomer")}
         >
           <Text style={styles.buttonText}>البحث عن عميل</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push(`/ThoabDetails/`)}
+          onPress={() => navigateTo("ThoabDetails")}
         >
           <Text style={styles.buttonText}>تفاصيل الثياب</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push(`/TradersDetailss/`)}
+          onPress={() => navigateTo("TradersDetails")}
         >
           <Text style={styles.buttonText}>بيانات التجار</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity
         style={styles.supportButton}
-        onPress={() => router.push(`/Support/`)}
+        onPress={() => navigateTo("Support")}
       >
         <Text style={styles.supportButtonText}>تواصل مع الدعم</Text>
       </TouchableOpacity>
@@ -87,16 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 5,
-    marginVertical: 10,
-  },
-  largeButton: {
-    width: "80%",
-    height: Platform.isPad ? 90 : 60, // Adjust height for iPad
-    backgroundColor: "#f0f0f0",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 5,
+    borderRadius: 20,
     marginVertical: 10,
   },
   buttonText: {
@@ -109,7 +105,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 5,
-    marginTop: 40,
+    marginTop: 80,
   },
   supportButtonText: {
     color: "#fff",
