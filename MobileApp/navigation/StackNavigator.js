@@ -2,12 +2,12 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import Home from "../app/home";
-import NewCustomer from "../screens/NewCustomer";
-import AddMeasurement from "../screens/AddMeasurement";
-import SearchCustomer from "../screens/SearchCustomer";
-import ThoabDetails from "../screens/ThoabDetails";
-import TradersDetails from "../screens/TradersDetails";
-import Support from "../screens/Support";
+import NewCustomer from "../app/screens/NewCustomer";
+import AddMeasurement from "../app/screens/AddMeasurement";
+import SearchCustomer from "../app/screens/SearchCustomer";
+import ThoabDetails from "../app/screens/ThoabDetails";
+import TradersDetails from "../app/screens/TradersDetails";
+import Support from "../app/screens/Support";
 
 const Stack = createStackNavigator();
 

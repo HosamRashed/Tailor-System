@@ -35,38 +35,38 @@ const Home = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigateTo("/NewCustomer/NewCustomer")}
+          onPress={() => navigateTo("/screens/NewCustomer")}
         >
           <Text style={styles.buttonText}>زبون جديد</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigateTo("AddMeasurement")}
+          onPress={() => navigateTo("/screens/AddMeasurement")}
         >
           <Text style={styles.buttonText}>اضافة مقاس جديد</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigateTo("SearchCustomer")}
+          onPress={() => navigateTo("/screens/SearchCustomer")}
         >
           <Text style={styles.buttonText}>البحث عن عميل</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigateTo("ThoabDetails")}
+          onPress={() => navigateTo("/screens/ThoabDetails")}
         >
           <Text style={styles.buttonText}>تفاصيل الثياب</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigateTo("TradersDetails")}
+          onPress={() => navigateTo("/screens/TradersDetails")}
         >
           <Text style={styles.buttonText}>بيانات التجار</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity
         style={styles.supportButton}
-        onPress={() => navigateTo("Support")}
+        onPress={() => navigateTo("/screens/Support")}
       >
         <Text style={styles.supportButtonText}>تواصل مع الدعم</Text>
       </TouchableOpacity>
