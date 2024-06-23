@@ -43,6 +43,7 @@ const createShop = async (req, res) => {
 /* Shop LOGGING IN */
 const loginShop = async (req, res) => {
   try {
+    console.log("inside login api body");
     const { phoneNumber, password } = req.body;
     const shop = await Shops.findOne({ shopPhoneNumber: phoneNumber });
     if (!shop) return res.status(400).json({ msg: "Shop does not exist." });
@@ -51,7 +52,7 @@ const loginShop = async (req, res) => {
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials." });
 
     const token = jwt.sign({ id: shop._id }, process.env.JWT_SECRET);
-    delete shop.password;
+    delete shop.shopPassword; // Ensure you delete `shopPassword` not `password`
     res.status(200).json({ token, shop });
   } catch (err) {
     res.status(500).json({ error: err.message });

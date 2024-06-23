@@ -9,15 +9,18 @@ import {
   Platform,
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
-
+import { useDispatch, useSelector } from "react-redux";
 import { COLORS } from "../constants";
 
 // Get the screen dimensions
 const { width, height } = Dimensions.get("window");
 
 const Home = () => {
+  const dispatch = useDispatch();
   const router = useRouter();
 
+  const user = useSelector((state) => state.user.user);
+  console.log("hello", user);
   // Handle navigation to specific routes
   const navigateTo = (routeName) => {
     router.push(routeName);

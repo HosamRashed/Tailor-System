@@ -1,6 +1,4 @@
-// src/components/Login.js
-
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -16,34 +14,37 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserSession } from "../actions/userActions";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter, Stack } from "expo-router";
+import { Formik } from "formik";
+import * as yup from "yup";
 import { COLORS } from "../../constants";
-import { Stack } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    userID: "",
-    password: "",
-  });
-
   const dispatch = useDispatch();
-  const navigation = useNavigation();
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const router = useRouter();
+  const url = useSelector((state) => state.user.url);
 
-  const handleInputChange = (name, value) => {
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const initialValues = {
+    phoneNumber: "",
+    password: "",
   };
 
-  const submit = () => {
-    const completeUrl = `https://your-backend-url.com/login`;
+  const validationSchema = yup.object().shape({
+    phoneNumber: yup
+      .string()
+      .required("رقم الجوال مطلوب")
+      .matches(/^[0-9]+$/, "يجب أن يحتوي رقم الجوال على أرقام فقط"),
+    password: yup.string().required("الرمز السري مطلوب"),
+  });
+
+  const handleLogin = (values) => {
+    const { phoneNumber, password } = values;
+    const completeUrl = `${url}/auth/loginShop`;
     const data = {
-      User_ID: formData.userID,
-      Password: formData.password,
+      phoneNumber,
+      password,
     };
 
     fetch(completeUrl, {
@@ -55,15 +56,16 @@ const Login = () => {
     })
       .then((response) => response.json())
       .then((res) => {
-        if (res.message === "Login Successful") {
-          dispatch(setUserSession(res.student)); // Assuming `res.student` contains user data
-          navigation.navigate("Home");
+        if (res.token) {
+          dispatch(setUserSession(res.shop));
+          router.replace("/home");
         } else {
-          Alert.alert("Login failed", res.message);
+          Alert.alert("Login failed", res.msg || res.error);
         }
       })
       .catch((error) => {
         Alert.alert("Login error", error.message);
+        console.log(error.message);
       });
   };
 
@@ -77,36 +79,62 @@ const Login = () => {
           headerShown: false,
         }}
       />
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={styles.container}>
-          <Text style={styles.MainTitle}>تسجيل الدخول</Text>
-          <Text style={styles.title}>رقم الجوال</Text>
-          <TextInput
-            keyboardType="number-pad"
-            style={styles.input}
-            placeholder="رقم الجوال"
-            value={formData.userID}
-            onChangeText={(value) => handleInputChange("userID", value)}
-          />
-          <Text style={styles.title}>الرمز السري</Text>
-          <TextInput
-            style={styles.input}
-            secureTextEntry
-            placeholder="الرمز السري"
-            value={formData.password}
-            onChangeText={(value) => handleInputChange("password", value)}
-          />
-          <TouchableOpacity style={styles.button} onPress={submit}>
-            <Text style={styles.buttonText}>تسجيل</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.supportButton}
-            onPress={() => navigateTo("/screens/Support")}
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleLogin}
+      >
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
+          <TouchableWithoutFeedback
+            onPress={Keyboard.dismiss}
+            accessible={false}
           >
-            <Text style={styles.supportButtonText}>تواصل مع الدعم</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableWithoutFeedback>
+            <View style={styles.container}>
+              <Text style={styles.MainTitle}>تسجيل الدخول</Text>
+              <Text style={styles.title}>رقم الجوال</Text>
+              <TextInput
+                keyboardType="number-pad"
+                style={styles.input}
+                placeholder="رقم الجوال"
+                value={values.phoneNumber}
+                onChangeText={handleChange("phoneNumber")}
+                onBlur={handleBlur("phoneNumber")}
+              />
+              {touched.phoneNumber && errors.phoneNumber && (
+                <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+              )}
+              <Text style={styles.title}>الرمز السري</Text>
+              <TextInput
+                style={styles.input}
+                secureTextEntry
+                placeholder="الرمز السري"
+                value={values.password}
+                onChangeText={handleChange("password")}
+                onBlur={handleBlur("password")}
+              />
+              {touched.password && errors.password && (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              )}
+              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.buttonText}>تسجيل</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.supportButton}
+                onPress={() => router.push("./screens/Support")}
+              >
+                <Text style={styles.supportButtonText}>تواصل مع الدعم</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableWithoutFeedback>
+        )}
+      </Formik>
     </SafeAreaView>
   );
 };
@@ -141,7 +169,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     fontSize: Platform.isPad ? 24 : 18,
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: "center",
   },
   button: {
@@ -160,7 +188,7 @@ const styles = StyleSheet.create({
   },
   supportButton: {
     width: "80%",
-    height: Platform.isPad ? 70 : 50, // Adjust height for iPad
+    height: Platform.isPad ? 70 : 50,
     backgroundColor: "#ff4d4d",
     justifyContent: "center",
     alignItems: "center",
@@ -169,7 +197,13 @@ const styles = StyleSheet.create({
   },
   supportButtonText: {
     color: "#fff",
-    fontSize: Platform.isPad ? 28 : 20, // Adjust font size for iPad
+    fontSize: Platform.isPad ? 28 : 20,
+  },
+  errorText: {
+    color: "red",
+    fontSize: Platform.isPad ? 18 : 14,
+    textAlign: "center",
+    marginBottom: 5,
   },
 });
 

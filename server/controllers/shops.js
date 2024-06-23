@@ -53,8 +53,6 @@ const getSpecificShop = async (req, res) => {
     if (!shop) {
       return res.status(404).json({ message: "Shop not found" });
     }
-
-    console.log(shop);
     res.status(200).json(shop);
   } catch (err) {
     res.status(500).json({ message: err.message });
