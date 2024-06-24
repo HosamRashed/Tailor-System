@@ -20,7 +20,7 @@ const Home = () => {
   const router = useRouter();
 
   const user = useSelector((state) => state.user.user);
-  console.log("hello", user);
+  // console.log("hello", user);
   // Handle navigation to specific routes
   const navigateTo = (routeName) => {
     router.push(routeName);
@@ -30,7 +30,7 @@ const Home = () => {
     <SafeAreaView style={styles.container}>
       <Stack.Screen
         options={{
-          headerStyle: { backgroundColor: COLORS.lightWhite },
+          headerStyle: { backgroundColor: "#fff" },
           headerShadowVisible: false,
           headerTitle: "",
         }}
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: "#fff",
     paddingHorizontal: width * 0.02, // Responsive padding
   },
   buttonContainer: {
@@ -103,16 +103,18 @@ const styles = StyleSheet.create({
   },
   supportButton: {
     width: "80%",
-    height: Platform.isPad ? 70 : 50, // Adjust height for iPad
+    height: Platform.isPad ? 70 : 50,
     backgroundColor: "#ff4d4d",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 5,
-    marginTop: 80,
+    borderRadius: 10,
+    marginTop: 15,
+    position: "absolute",
+    bottom: 20,
   },
   supportButtonText: {
     color: "#fff",
-    fontSize: Platform.isPad ? 28 : 20, // Adjust font size for iPad
+    fontSize: Platform.isPad ? 28 : 20,
   },
 });
 

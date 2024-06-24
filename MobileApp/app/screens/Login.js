@@ -73,7 +73,7 @@ const Login = () => {
     <SafeAreaView style={styles.safeArea}>
       <Stack.Screen
         options={{
-          headerStyle: { backgroundColor: COLORS.lightWhite },
+          headerStyle: { backgroundColor: "#fff" },
           headerShadowVisible: false,
           headerTitle: "",
           headerShown: false,
@@ -97,12 +97,11 @@ const Login = () => {
             accessible={false}
           >
             <View style={styles.container}>
-              <Text style={styles.MainTitle}>تسجيل الدخول</Text>
-              <Text style={styles.title}>رقم الجوال</Text>
               <TextInput
                 keyboardType="number-pad"
                 style={styles.input}
                 placeholder="رقم الجوال"
+                placeholderTextColor="#ccc"
                 value={values.phoneNumber}
                 onChangeText={handleChange("phoneNumber")}
                 onBlur={handleBlur("phoneNumber")}
@@ -110,11 +109,11 @@ const Login = () => {
               {touched.phoneNumber && errors.phoneNumber && (
                 <Text style={styles.errorText}>{errors.phoneNumber}</Text>
               )}
-              <Text style={styles.title}>الرمز السري</Text>
               <TextInput
                 style={styles.input}
                 secureTextEntry
                 placeholder="الرمز السري"
+                placeholderTextColor="#ccc"
                 value={values.password}
                 onChangeText={handleChange("password")}
                 onBlur={handleBlur("password")}
@@ -142,7 +141,7 @@ const Login = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.lightWhite,
+    backgroundColor: "#fff",
   },
   container: {
     flex: 1,
@@ -194,6 +193,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 10,
     marginTop: 15,
+    position: "absolute",
+    bottom: 20,
   },
   supportButtonText: {
     color: "#fff",
