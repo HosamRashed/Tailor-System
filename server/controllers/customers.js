@@ -37,7 +37,7 @@ const insertNewCustomer = async (req, res) => {
     );
     if (existingCustomer) {
       return res.status(409).json({
-        message: "Customer already exists in the shop's customers list",
+        message: "There is another customer with the same phone Number!",
       });
     }
 
@@ -130,7 +130,7 @@ const getAllShopcustomer = async (req, res) => {
 const findCustomersByName = async (req, res) => {
   try {
     const { shopID } = req.params;
-    const { CustomerName } = req.body;
+    const { CustomerInfo } = req.body;
 
     // Validate shopID
     if (!mongoose.Types.ObjectId.isValid(shopID)) {
@@ -144,7 +144,7 @@ const findCustomersByName = async (req, res) => {
 
     // Find customers with matching name in the specific shop
     const matchingCustomers = shop.customers.filter((customer) =>
-      customer.fullName.toLowerCase().includes(CustomerName.toLowerCase())
+      customer.fullName.toLowerCase().includes(CustomerInfo.toLowerCase())
     );
 
     res.status(200).json(matchingCustomers);
@@ -156,7 +156,7 @@ const findCustomersByName = async (req, res) => {
 const findCustomersByPhoneNumber = async (req, res) => {
   try {
     const { shopID } = req.params;
-    const { CustomerPhoneNumber } = req.body;
+    const { CustomerInfo } = req.body;
 
     // Validate shopID
     if (!mongoose.Types.ObjectId.isValid(shopID)) {
@@ -168,14 +168,15 @@ const findCustomersByPhoneNumber = async (req, res) => {
       return res.status(404).json({ message: "Shop not found" });
     }
 
-    // Find customers with matching name in the specific shop
-    const matchingCustomer = shop.customers.find(
-      (customer) => customer.phoneNumber === CustomerPhoneNumber
+    // Find customers with matching phone number in the specific shop
+    const matchingCustomers = shop.customers.filter(
+      (customer) => customer.phoneNumber === CustomerInfo
     );
 
-    res.status(200).json(matchingCustomer);
+    res.status(200).json(matchingCustomers);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

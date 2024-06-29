@@ -94,6 +94,7 @@ const NewCustomer = () => {
             />
           </TouchableOpacity>
 
+          {/* <Text style={styles.title}>ابحث عن الزبون</Text> */}
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -144,10 +145,6 @@ const NewCustomer = () => {
               </View>
             )}
           </Formik>
-
-          <TouchableOpacity style={styles.contactButton}>
-            <Text style={styles.contactButtonText}>تواصل مع الدعم</Text>
-          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
@@ -160,6 +157,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   container: {
+    padding: 16,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -172,11 +170,17 @@ const styles = StyleSheet.create({
   homeIcon: {
     position: "absolute",
     top: Platform.OS === "ios" ? 20 : 10, // Adjusting for potential status bar height on iOS
-    left: 20,
+    left: 15,
     zIndex: 1,
   },
+  title: {
+    marginTop: 35,
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "right",
+  },
   input: {
-    width: "90%",
+    width: "100%",
     paddingVertical: Platform.isPad ? height * 0.015 : height * 0.02,
     paddingHorizontal: 15,
     borderWidth: 1,
@@ -192,7 +196,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   saveButton: {
-    width: "90%",
+    width: "100%",
     paddingVertical: Platform.isPad ? height * 0.015 : height * 0.02,
     backgroundColor: "#90ee90",
     justifyContent: "center",
@@ -202,21 +206,6 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: "#000",
-    fontSize: Platform.isPad ? 28 : 20,
-  },
-  contactButton: {
-    width: "80%",
-    height: Platform.isPad ? 70 : 50,
-    backgroundColor: "#ff4d4d",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    marginTop: 15,
-    position: "absolute",
-    bottom: 20,
-  },
-  contactButtonText: {
-    color: "#fff",
     fontSize: Platform.isPad ? 28 : 20,
   },
 });

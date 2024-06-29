@@ -6,7 +6,7 @@ import store from "./store/index";
 const Layout = () => {
   return (
     <Provider store={store}>
-      <Stack initialRouteName="home">
+      <Stack initialRouteName="login">
         <Stack.Screen name="home" />
       </Stack>
     </Provider>

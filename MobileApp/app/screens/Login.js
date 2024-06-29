@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserSession } from "../actions/userActions";
 import { useRouter, Stack } from "expo-router";
@@ -55,9 +56,10 @@ const Login = () => {
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
-      .then((res) => {
+      .then(async (res) => {
         if (res.token) {
           dispatch(setUserSession(res.shop));
+          await AsyncStorage.setItem("userSession", JSON.stringify(res.shop));
           router.replace("/home");
         } else {
           Alert.alert("Login failed", res.msg || res.error);
@@ -188,7 +190,7 @@ const styles = StyleSheet.create({
   supportButton: {
     width: "80%",
     height: Platform.isPad ? 70 : 50,
-    backgroundColor: "#ff4d4d",
+    backgroundColor: "#f08080",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,

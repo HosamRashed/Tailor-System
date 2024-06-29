@@ -21,6 +21,7 @@ const Home = () => {
 
   const user = useSelector((state) => state.user.user);
   // console.log("hello", user);
+
   // Handle navigation to specific routes
   const navigateTo = (routeName) => {
     router.push(routeName);
@@ -33,6 +34,7 @@ const Home = () => {
           headerStyle: { backgroundColor: "#fff" },
           headerShadowVisible: false,
           headerTitle: "",
+          headerShown: false,
         }}
       />
       <View style={styles.buttonContainer}>
@@ -44,7 +46,7 @@ const Home = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigateTo("/screens/AddMeasurement")}
+          onPress={() => navigateTo("/screens/SearchCustomer")}
         >
           <Text style={styles.buttonText}>اضافة مقاس جديد</Text>
         </TouchableOpacity>
@@ -104,7 +106,7 @@ const styles = StyleSheet.create({
   supportButton: {
     width: "80%",
     height: Platform.isPad ? 70 : 50,
-    backgroundColor: "#ff4d4d",
+    backgroundColor: "#f08080",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
