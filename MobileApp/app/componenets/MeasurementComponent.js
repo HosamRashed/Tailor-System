@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter, Stack } from "expo-router";
 
 const MeasurementComponent = (props) => {
-  console.log(props);
+  console.log(props.measurement);
   const router = useRouter();
   const { measurement, info: information } = props;
 
@@ -18,7 +18,7 @@ const MeasurementComponent = (props) => {
     <TouchableOpacity onPress={handleCustomer} accessible={false}>
       <View style={styles.container}>
         <Text style={styles.label}>تاريخ المقاس : {measurement.date}</Text>
-        <Text style={styles.label}>رقم الصفحة : {measurement.phoneNumber}</Text>
+        <Text style={styles.label}>رقم الصفحة : {measurement.pageNumber}</Text>
         <Text style={styles.label}>
           عدد الثياب : {measurement.numberOfThoabs}
         </Text>

@@ -146,7 +146,9 @@ const getAllMeasurements = async (req, res) => {
     }
 
     // Find the customer
-    const customer = await Customers.findById(customerID);
+    const customer = await Customers.findById(customerID).populate(
+      "measurements"
+    );
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }

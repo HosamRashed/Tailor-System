@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -7,53 +7,87 @@ import {
   TouchableOpacity,
   FlatList,
   Platform,
+  Alert,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter, Stack } from "expo-router";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { format } from 'date-fns';
 import MeasurementComponent from "../componenets/MeasurementComponent";
 
 const CustomerDetail = () => {
+  const url = useSelector((state) => state.user.url);
+  const shopID = useSelector((state) => state.user.user._id);
+  const [measurements, setMeasurements] = useState([]);
   const route = useRoute();
   const navigation = useNavigation();
-  const router = useRouter();
+
   const { customer } = route.params;
   const customerObj = JSON.parse(customer);
-  console.log(customerObj.measurements);
+  const customerID = customerObj._id;
 
-  //   const renderMeasurement = ({ item }) => (
-  //     <View style={styles.measurementContainer}>
-  //       {/* <Text style={styles.measurementDetail}>تاريخ القياس: {item.date}</Text> */}
-  //       {/* <Text style={styles.measurementDetail}>رقم الصفحة: {item.page}</Text>
-  //       <Text style={styles.measurementDetail}>عدد القلاب: {item.count}</Text> */}
-  //     </View>
-  //   );
+  useEffect(() => {
+    handleRequest();
+  }, []);
+
+  const handleRequest = () => {
+    const completeUrl = `${url}/shops/${shopID}/${customerID}/measurments`;
+
+    fetch(completeUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        if (res.length > 0) {
+          const formattedMeasurements = res.map((measurement) => ({
+            ...measurement,
+            date: format(new Date(measurement.date), "dd/MM/yyyy"),
+          }));
+          setMeasurements(formattedMeasurements);
+        } else {
+          Alert.alert("There is no measurement data for this customer");
+        }
+      })
+      .catch((error) => {
+        Alert.alert("Request error", error.message);
+        console.log(error.message);
+      });
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Stack.Screen
-          options={{
-            headerStyle: { backgroundColor: "#fff" },
-            headerShadowVisible: true,
-            headerTitle: "",
-            headerShown: false,
-          }}
-        />
         <TouchableOpacity
           style={styles.homeIcon}
           onPress={() => navigation.goBack()}
         >
+          <Stack.Screen
+            options={{
+              headerStyle: { backgroundColor: "#fff" },
+              headerShadowVisible: true,
+              headerTitle: "",
+              headerShown: false,
+            }}
+          />
           <Ionicons name="arrow-back" size={32} color="black" />
         </TouchableOpacity>
         <Text style={styles.customerName}>{customerObj.fullName}</Text>
         <FlatList
-          data={customerObj.measurements}
+          data={measurements}
           keyExtractor={(item, index) => index.toString()}
-          //   renderItem={({ item }) => <MeasurementComponent customer={item} />}
+          renderItem={({ item }) => <MeasurementComponent measurement={item} />}
           contentContainerStyle={styles.measurementsList}
         />
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            /* Handle adding new measurement */
+          }}
+        >
           <Text style={styles.addButtonText}>إضافة قياس جديد</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.contactButton}>
@@ -75,7 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   homeIcon: {
-    top: Platform.OS === "ios" ? 10 : 10, // Adjusting for potential status bar height on iOS
+    top: Platform.OS === "ios" ? 10 : 10,
     left: 0,
     zIndex: 1,
   },
