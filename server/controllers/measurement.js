@@ -149,6 +149,7 @@ const getAllMeasurements = async (req, res) => {
     const customer = await Customers.findById(customerID).populate(
       "measurements"
     );
+
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }
@@ -159,8 +160,52 @@ const getAllMeasurements = async (req, res) => {
   }
 };
 
+const getSpecificMeasurement = async (req, res) => {
+  try {
+    const { shopID, customerID, measurementID } = req.params;
+
+    // Validate IDs
+    if (
+      !mongoose.Types.ObjectId.isValid(shopID) ||
+      !mongoose.Types.ObjectId.isValid(customerID) ||
+      !mongoose.Types.ObjectId.isValid(measurementID)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid shopID, customerID or measurementID!" });
+    }
+
+    // Find the shop
+    const shop = await Shops.findById(shopID);
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    // Find the customer and populate measurements
+    const customer = await Customers.findById(customerID).populate(
+      "measurements"
+    );
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    // Find the specific measurement
+    const measurement = customer.measurements.find(
+      (m) => m._id.toString() === measurementID
+    );
+    if (!measurement) {
+      return res.status(404).json({ message: "Measurement not found" });
+    }
+
+    res.status(200).json(measurement);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports = {
   insertNewMeasurement,
+  getSpecificMeasurement,
   updateMeasurement,
   deleteMeasurement,
   getAllMeasurements,

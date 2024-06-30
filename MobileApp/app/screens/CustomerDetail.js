@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
   Platform,
   Alert,
 } from "react-native";
@@ -13,7 +14,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter, Stack } from "expo-router";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import MeasurementComponent from "../componenets/MeasurementComponent";
 
 const CustomerDetail = () => {
@@ -22,6 +23,8 @@ const CustomerDetail = () => {
   const [measurements, setMeasurements] = useState([]);
   const route = useRoute();
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
+  let [noData, setNoData] = useState("");
 
   const { customer } = route.params;
   const customerObj = JSON.parse(customer);
@@ -32,6 +35,7 @@ const CustomerDetail = () => {
   }, []);
 
   const handleRequest = () => {
+    setLoading(true);
     const completeUrl = `${url}/shops/${shopID}/${customerID}/measurments`;
 
     fetch(completeUrl, {
@@ -42,6 +46,7 @@ const CustomerDetail = () => {
     })
       .then((response) => response.json())
       .then((res) => {
+        setLoading(false);
         if (res.length > 0) {
           const formattedMeasurements = res.map((measurement) => ({
             ...measurement,
@@ -49,10 +54,11 @@ const CustomerDetail = () => {
           }));
           setMeasurements(formattedMeasurements);
         } else {
-          Alert.alert("There is no measurement data for this customer");
+          setNoData("لا يوجد مقاسات سابقة للزبون!");
         }
       })
       .catch((error) => {
+        setLoading(false);
         Alert.alert("Request error", error.message);
         console.log(error.message);
       });
@@ -76,23 +82,34 @@ const CustomerDetail = () => {
           <Ionicons name="arrow-back" size={32} color="black" />
         </TouchableOpacity>
         <Text style={styles.customerName}>{customerObj.fullName}</Text>
-        <FlatList
-          data={measurements}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => <MeasurementComponent measurement={item} />}
-          contentContainerStyle={styles.measurementsList}
-        />
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => {
-            /* Handle adding new measurement */
-          }}
-        >
-          <Text style={styles.addButtonText}>إضافة قياس جديد</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.contactButton}>
-          <Text style={styles.contactButtonText}>تواصل مع الدعم</Text>
-        </TouchableOpacity>
+
+        {loading ? (
+          <ActivityIndicator size="large" color="#90ee90" />
+        ) : measurements.length > 0 ? (
+          <>
+            <Text style={styles.searchTitle}>جميع المقاسات السابقه : </Text>
+            <FlatList
+              data={measurements}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <MeasurementComponent measurement={item} />
+              )}
+              contentContainerStyle={styles.measurementsList}
+            />
+          </>
+        ) : (
+          <Text style={styles.noDataText}>{noData}</Text>
+        )}
+        <View style={styles.bottomButtonsContainer}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => {
+              /* Handle adding new measurement */
+            }}
+          >
+            <Text style={styles.addButtonText}>إضافة قياس جديد</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -115,14 +132,29 @@ const styles = StyleSheet.create({
   },
   customerName: {
     textAlign: "center",
-    fontSize: 22,
+    fontSize: Platform.isPad ? 28 : 22,
     fontWeight: "bold",
     marginBottom: 10,
+    textAlign: "right",
+  },
+  searchTitle: {
+    marginVertical: 10,
+    fontSize: Platform.isPad ? 26 : 20,
+    textAlign: "right",
   },
   measurementsList: {
     paddingBottom: 100,
   },
+  bottomButtonsContainer: {
+    position: "absolute",
+    bottom: 20, // Adjust as needed
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   addButton: {
+    width: "90%",
     marginTop: 20,
     paddingVertical: 15,
     backgroundColor: "#90ee90",
@@ -134,17 +166,12 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 20,
   },
-  contactButton: {
+
+  noDataText: {
+    textAlign: "center",
+    fontSize: 18,
+    color: "grey",
     marginTop: 20,
-    paddingVertical: 15,
-    backgroundColor: "#f08080",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-  },
-  contactButtonText: {
-    color: "#fff",
-    fontSize: 20,
   },
 });
 

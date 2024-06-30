@@ -18,6 +18,7 @@ const {
 
 const {
   insertNewMeasurement,
+  getSpecificMeasurement,
   updateMeasurement,
   deleteMeasurement,
   getAllMeasurements,
@@ -69,6 +70,7 @@ router.put(
   updateMeasurement
 );
 router.get("/:shopID/:customerID/measurments/", getAllMeasurements);
+router.get("/:shopID/:customerID/measurments/:measurmentID", getSpecificMeasurement);
 router.delete(
   "/:shopID/:customerID/measurments/:measurementID",
   deleteMeasurement

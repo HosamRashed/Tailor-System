@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter, Stack } from "expo-router";
 
 const MeasurementComponent = (props) => {
-  console.log(props.measurement);
   const router = useRouter();
   const { measurement, info: information } = props;
 
@@ -40,7 +39,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 10,
     alignItems: "flex-end",
-    paddingHorizontal: 25,
+    paddingHorizontal: 15,
     shadowOffset: { width: 0, height: 0 },
     shadowColor: "#171717",
     shadowOpacity: 0.3,

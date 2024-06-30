@@ -143,9 +143,16 @@ const findCustomersByName = async (req, res) => {
     }
 
     // Find customers with matching name in the specific shop
-    const matchingCustomers = shop.customers.filter((customer) =>
-      customer.fullName.toLowerCase().includes(CustomerInfo.toLowerCase())
-    );
+    const matchingCustomerIDs = shop.customers
+      .filter((customer) =>
+        customer.fullName.toLowerCase().includes(CustomerInfo.toLowerCase())
+      )
+      .map((customer) => customer._id);
+
+    // Find and populate the matching customers
+    const matchingCustomers = await Customers.find({
+      _id: { $in: matchingCustomerIDs },
+    }).populate("measurements");
 
     res.status(200).json(matchingCustomers);
   } catch (err) {
@@ -168,15 +175,19 @@ const findCustomersByPhoneNumber = async (req, res) => {
       return res.status(404).json({ message: "Shop not found" });
     }
 
-    // Find customers with matching phone number in the specific shop
-    const matchingCustomers = shop.customers.filter(
-      (customer) => customer.phoneNumber === CustomerInfo
-    );
+    // Find customers with matching name in the specific shop
+    const matchingCustomerIDs = shop.customers
+      .filter((customer) => customer.phoneNumber === CustomerInfo)
+      .map((customer) => customer._id);
+
+    // Find and populate the matching customers
+    const matchingCustomers = await Customers.find({
+      _id: { $in: matchingCustomerIDs },
+    }).populate("measurements");
 
     res.status(200).json(matchingCustomers);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: err.message });
   }
 };
 
