@@ -64,7 +64,7 @@ const Home = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigateTo("/screens/TradersDetails")}
+          onPress={() => navigateTo("/screens/Traders/TradersDetails")}
         >
           <Text style={styles.buttonText}>بيانات التجار</Text>
         </TouchableOpacity>

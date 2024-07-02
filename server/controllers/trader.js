@@ -14,30 +14,32 @@ const insertNewTrader = async (req, res) => {
       return res.status(400).json({ message: "Invalid shopID!" });
     }
 
+    // Fetch shop and validate existence
     const shop = await Shops.findById(shopID);
     if (!shop) {
       return res.status(404).json({ message: "Shop not found" });
     }
 
+    // Create new trader instance
     const newTrader = new Trader({
       name,
       phoneNumber,
       moneyAmount,
-      remainingAmount: moneyAmount,
+      remainingAmount: moneyAmount, // Assuming remainingAmount starts with moneyAmount
       payments,
     });
 
-    // Insert the new customer into the database
+    // Insert the new trader into the database
     await newTrader.save();
 
-    // Add the new customer to the shop's customers array
+    // Update shop document with new trader ID
     shop.traders.push(newTrader._id);
-
-    // Save the changes to the shop document
     await shop.save();
 
+    // Respond with created trader
     res.status(201).json(newTrader);
   } catch (err) {
+    // Handle errors
     res.status(500).json({ message: err.message });
   }
 };
@@ -103,6 +105,7 @@ const deleteTrader = async (req, res) => {
 const getTraders = async (req, res) => {
   try {
     const { shopID } = req.params;
+    const { searchText } = req.query;
 
     // Validate shopID
     if (!mongoose.Types.ObjectId.isValid(shopID)) {
@@ -115,8 +118,16 @@ const getTraders = async (req, res) => {
       return res.status(404).json({ message: "Shop not found" });
     }
 
+    let traders = shop.traders;
+
+    // If searchText is provided, filter traders by name
+    if (searchText) {
+      const regex = new RegExp(searchText, "i"); // case-insensitive search
+      traders = traders.filter((trader) => regex.test(trader.name));
+    }
+
     // Return the traders array
-    res.status(200).json(shop.traders);
+    res.status(200).json(traders);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

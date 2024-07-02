@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   SafeAreaView,
   View,
@@ -18,8 +18,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter, Stack } from "expo-router";
-import CustomerComponent from "../componenets/CustomerComponent";
+import { useFocusEffect, useRouter, Stack } from "expo-router";
+import CustomerComponent from "../../componenets/TraderComponent";
+import { debounce } from "lodash";
 
 const { width, height } = Dimensions.get("window");
 
@@ -33,66 +34,36 @@ const validationSchema = yup.object().shape({
     ),
 });
 
-//  useEffect(() => {
-//     handleRequest();
-//   }, []);
-
-//   const handleRequest = () => {
-//     setLoading(true);
-//     const completeUrl = `${url}/shops/${shopID}/traders`;
-
-//     fetch(completeUrl, {
-//       method: "GET",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     })
-//       .then((response) => response.json())
-//       .then((res) => {
-//         setLoading(false);
-//         setResults(res);
-//         } else {
-//           setNoData("لا يوجد مقاسات سابقة للزبون!");
-//         }
-//       })
-//       .catch((error) => {
-//         setLoading(false);
-//         Alert.alert("Request error", error.message);
-//         console.log(error.message);
-//       });
-//   };
-
 const TradersDetails = () => {
   const url = useSelector((state) => state.user.url);
   const shopID = useSelector((state) => state.user.user._id);
   const [searchText, setSearchText] = useState("");
   const [noData, setNoData] = useState("");
-  const dispatch = useDispatch();
   const router = useRouter();
   const [results, setResults] = useState([]);
+  const [filteredResults, setFilteredResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (values) => {
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllTraders();
+    }, [])
+  );
+
+  const fetchAllTraders = () => {
     setLoading(true);
     const completeUrl = `${url}/shops/${shopID}/traders`;
-    const data = {
-      CustomerInfo: values.searchText,
-    };
 
-    fetch(completeUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
+    fetch(completeUrl)
       .then((response) => response.json())
       .then((res) => {
         setLoading(false);
         if (res.length > 0) {
           setResults(res);
+          setFilteredResults(res);
         } else {
           setResults([]);
+          setFilteredResults([]);
           setNoData("لا يوجد موزعين!");
         }
       })
@@ -101,6 +72,30 @@ const TradersDetails = () => {
         Alert.alert("Request error", error.message);
         console.log(error.message);
       });
+  };
+
+  const handleSearch = useCallback(
+    debounce((searchText) => {
+      if (searchText) {
+        const filtered = results.filter((trader) =>
+          trader.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setFilteredResults(filtered);
+        if (filtered.length === 0) {
+          setNoData("لا يوجد موزعين!");
+        } else {
+          setNoData("");
+        }
+      } else {
+        setFilteredResults(results);
+      }
+    }, 300),
+    [results]
+  );
+
+  const handleChange = (value) => {
+    setSearchText(value);
+    handleSearch(value);
   };
 
   return (
@@ -126,31 +121,37 @@ const TradersDetails = () => {
             <Formik
               initialValues={{ searchText: "" }}
               validationSchema={validationSchema}
-              onSubmit={handleSubmit}
+              onSubmit={() => {}}
             >
               {({
-                handleChange,
                 handleBlur,
-                handleSubmit,
                 values,
                 errors,
                 touched,
+                setFieldValue,
+                setFieldTouched,
               }) => (
                 <View>
                   <TextInput
                     style={styles.input}
-                    value={values.searchText}
-                    onChangeText={handleChange("searchText")}
+                    value={searchText}
+                    onChangeText={(value) => {
+                      setFieldValue("searchText", value);
+                      setFieldTouched("searchText", true);
+                      handleChange(value);
+                    }}
                     onBlur={handleBlur("searchText")}
                     keyboardType="default"
                   />
-                  {touched.searchText && errors.searchText && (
-                    <Text style={styles.errorText}>{errors.searchText}</Text>
-                  )}
+                  {touched.searchText &&
+                    errors.searchText &&
+                    !values.searchText && (
+                      <Text style={styles.errorText}>{errors.searchText}</Text>
+                    )}
 
                   <TouchableOpacity
                     style={styles.searchButton}
-                    onPress={handleSubmit}
+                    onPress={() => handleSearch(values.searchText)}
                   >
                     <Text style={styles.searchButtonText}>ابحث</Text>
                   </TouchableOpacity>
@@ -160,17 +161,32 @@ const TradersDetails = () => {
           </View>
         </TouchableWithoutFeedback>
         {loading ? (
-          <ActivityIndicator size="large" color="#90ee90" />
-        ) : results.length > 0 ? (
+          <ActivityIndicator
+            size="large"
+            color="#90ee90"
+            style={styles.loading}
+          />
+        ) : filteredResults.length > 0 ? (
           <FlatList
-            data={results}
-            keyExtractor={(item, index) => index.toString()}
+            data={filteredResults}
+            keyExtractor={(item) => item._id}
             renderItem={({ item }) => <CustomerComponent customer={item} />}
             contentContainerStyle={styles.resultsList}
+            style={styles.resultsContainer}
           />
         ) : (
           <Text style={styles.noDataText}>{noData}</Text>
         )}
+        <View style={styles.bottomButtonsContainer}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => {
+              router.push("./NewTrader");
+            }}
+          >
+            <Text style={styles.addButtonText}>إضافة موزع جديد</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -189,11 +205,10 @@ const styles = StyleSheet.create({
   homeIcon: {
     position: "absolute",
     top: Platform.OS === "ios" ? 10 : 10,
-    // left: 10,
     zIndex: 1,
   },
   title: {
-    marginTop: 60,
+    marginTop: 40,
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "right",
@@ -214,7 +229,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   searchButton: {
-    marginTop: 20,
+    marginTop: 10,
     paddingVertical: 12,
     backgroundColor: "#90ee90",
     justifyContent: "center",
@@ -225,8 +240,13 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 20,
   },
+  resultsContainer: {
+    marginTop: 10,
+    flex: 1,
+    marginBottom: 70,
+  },
   resultsList: {
-    paddingBottom: 100,
+    // paddingBottom: 100,
   },
   errorText: {
     color: "red",
@@ -238,6 +258,31 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "grey",
     marginTop: 20,
+  },
+  loading: {
+    marginTop: 20,
+  },
+
+  bottomButtonsContainer: {
+    position: "absolute",
+    bottom: 20, // Adjust as needed
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addButton: {
+    width: "90%",
+    marginTop: 20,
+    paddingVertical: 15,
+    backgroundColor: "#2b79ff",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+  },
+  addButtonText: {
+    color: "white",
+    fontSize: 20,
   },
 });
 

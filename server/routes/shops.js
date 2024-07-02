@@ -70,14 +70,17 @@ router.put(
   updateMeasurement
 );
 router.get("/:shopID/:customerID/measurments/", getAllMeasurements);
-router.get("/:shopID/:customerID/measurments/:measurmentID", getSpecificMeasurement);
+router.get(
+  "/:shopID/:customerID/measurments/:measurmentID",
+  getSpecificMeasurement
+);
 router.delete(
   "/:shopID/:customerID/measurments/:measurementID",
   deleteMeasurement
 );
 
 // shops' traders
-router.post("/:shopID/traders/insert", insertNewTrader); // new customer.
+router.post("/:shopID/traders/insert", insertNewTrader); // new trader.
 router.delete("/:shopID/traders/:traderID", deleteTrader); // delete a trader
 router.patch("/:shopID/traders/:traderID", updateTrader); // update a trader's info.
 router.get("/:shopID/traders/", getTraders);
