@@ -19,7 +19,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useRouter, Stack } from "expo-router";
-import CustomerComponent from "../../componenets/TraderComponent";
+import TraderComponent from "../../componenets/TraderComponent";
 import { debounce } from "lodash";
 
 const { width, height } = Dimensions.get("window");
@@ -34,7 +34,7 @@ const validationSchema = yup.object().shape({
     ),
 });
 
-const TradersDetails = () => {
+const Traders = () => {
   const url = useSelector((state) => state.user.url);
   const shopID = useSelector((state) => state.user.user._id);
   const [searchText, setSearchText] = useState("");
@@ -170,7 +170,7 @@ const TradersDetails = () => {
           <FlatList
             data={filteredResults}
             keyExtractor={(item) => item._id}
-            renderItem={({ item }) => <CustomerComponent customer={item} />}
+            renderItem={({ item }) => <TraderComponent trader={item} />}
             contentContainerStyle={styles.resultsList}
             style={styles.resultsContainer}
           />
@@ -286,4 +286,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TradersDetails;
+export default Traders;

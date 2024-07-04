@@ -1,41 +1,33 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { format } from "date-fns"; // Import date-fns for date formatting
-import { useRouter, Stack } from "expo-router";
+import { useRouter } from "expo-router";
 
-const TraderComponent = ({ customer }) => {
+const TraderComponent = ({ trader }) => {
   const router = useRouter();
-  // Format measurements dates to dd/MM/yyyy
-  //   const formattedMeasurements = customer.measurements.map((measurement) => ({
-  //     ...measurement,
-  //     date: format(new Date(measurement.date), "dd/MM/yyyy"),
-  //   }));
 
-  //   let lastVisitDate = "أول زيارة!"; // Default message for first visit
+  const handleEdit = () => {
+    // Handle edit action
+  };
 
-  //   // If measurements exist, find the latest date
-  //   if (formattedMeasurements.length > 0) {
-  //     const sortedMeasurements = formattedMeasurements.sort(
-  //       (a, b) => new Date(b.date) - new Date(a.date)
-  //     );
-  //     lastVisitDate = sortedMeasurements[0].date;
-  //   }
+  const handleDelete = () => {
+    // Handle delete action
+  };
 
-  //   const handleCustomer = () => {
-  //     router.push({
-  //       pathname: "../screens/CustomerDetail",
-  //       params: { customer: JSON.stringify(customer) },
-  //     });
-  //   };
+  const handleTrader = () => {
+    router.push({
+      pathname: "../Traders/TraderDetails",
+      params: { trader: JSON.stringify(trader) },
+    });
+  };
 
-  //   onPress={handleCustomer}
   return (
-    <TouchableOpacity accessible={false}>
+    <TouchableOpacity onPress={handleTrader} accessible={false}>
       <View style={styles.container}>
-        <Text style={styles.label}>اسم الزبون : {customer.name}</Text>
-        <Text style={styles.label}>رقم الجوال : {customer.phoneNumber}</Text>
-        <Text style={styles.label}>آخر زيارة : {customer.moneyAmount}</Text>
+        <Text style={styles.label}>اسم الموزع : {trader.name}</Text>
+        <Text style={styles.label}>رقم الجوال : {trader.phoneNumber}</Text>
+        <Text style={styles.label}>
+          المبلغ المتبقي : {trader.remainingAmount}
+        </Text>
       </View>
     </TouchableOpacity>
   );

@@ -133,6 +133,36 @@ const getTraders = async (req, res) => {
   }
 };
 
+const getAllTraderPayments = async (req, res) => {
+  try {
+    const { shopID, traderID } = req.params;
+
+    // Validate shopID and traderID
+    if (
+      !mongoose.Types.ObjectId.isValid(shopID) ||
+      !mongoose.Types.ObjectId.isValid(traderID)
+    ) {
+      return res.status(400).json({ message: "Invalid shop or trader ID!" });
+    }
+
+    // Find the shop by ID and populate the traders
+    const shop = await Shops.findById(shopID).populate("traders");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    const trader = await Trader.findById(traderID).populate("payments");
+    if (!trader) {
+      return res.status(404).json({ message: "Trader not found" });
+    }
+
+    // Return the payments array
+    res.status(200).json(trader.payments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 const getTrader = async (req, res) => {
   try {
     const { shopID, traderID } = req.params;
@@ -322,6 +352,7 @@ module.exports = {
   updateTrader,
   getTraders,
   getTrader,
+  getAllTraderPayments,
   insertPayment,
   updatePayment,
   deletePayment,

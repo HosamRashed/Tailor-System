@@ -30,6 +30,7 @@ const {
   updateTrader,
   getTrader,
   getTraders,
+  getAllTraderPayments,
   insertPayment,
   updatePayment,
   deletePayment,
@@ -87,9 +88,11 @@ router.get("/:shopID/traders/", getTraders);
 router.get("/:shopID/traders/:traderID", getTrader);
 
 // shops' traders payments
-router.post("/:shopID/traders/:traderID/insert", insertPayment); // new customer.
-router.put("/:shopID/traders/:traderID/:paymentID", updatePayment); // new customer.
-router.delete("/:shopID/traders/:traderID/:paymentID", deletePayment); // new customer.
+
+router.get("/:shopID/traders/:traderID/payments", getAllTraderPayments);
+router.post("/:shopID/traders/:traderID/insert", insertPayment);
+router.put("/:shopID/traders/:traderID/:paymentID", updatePayment);
+router.delete("/:shopID/traders/:traderID/:paymentID", deletePayment);
 
 // // insert update delete measurments into a specific trader's info
 // router.post(

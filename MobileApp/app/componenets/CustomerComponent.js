@@ -22,12 +22,12 @@ const CustomerComponent = ({ customer }) => {
     lastVisitDate = sortedMeasurements[0].date;
   }
 
-  const handleCustomer = () => {
-    router.push({
-      pathname: "../screens/CustomerDetail",
-      params: { customer: JSON.stringify(customer) },
-    });
-  };
+    const handleCustomer = () => {
+      router.push({
+        pathname: "../screens/CustomerDetail",
+        params: { customer: JSON.stringify(customer) },
+      });
+    };
 
   return (
     <TouchableOpacity onPress={handleCustomer} accessible={false}>
