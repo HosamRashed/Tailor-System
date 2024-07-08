@@ -1,28 +1,65 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useRouter, Stack } from "expo-router";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { useRouter } from "expo-router";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useSelector } from "react-redux";
 
 const MeasurementComponent = (props) => {
   const router = useRouter();
-  const { measurement, info: information } = props;
+  const { measurement, onDelete, onEdit, customerID } = props;
+  const url = useSelector((state) => state.user.url);
+  const shopID = useSelector((state) => state.user.user._id);
 
-  const handleCustomer = () => {
+  const handleDelete = () => {
+    Alert.alert("تأكيد الحذف", "هل أنت متأكد أنك تريد حذف هذه المقاس ؟", [
+      { text: "إلغاء", style: "cancel" },
+      {
+        text: "حذف",
+        onPress: async () => {
+          const response = await fetch(
+            `${url}/shops/${shopID}/${customerID}/measurements/${measurement._id}`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (response.ok) {
+            onDelete(measurement._id);
+          } else {
+            Alert.alert("Error", "Failed to delete measurement");
+          }
+        },
+        style: "destructive",
+      },
+    ]);
+  };
+
+  const handleEdit = () => {
     router.push({
-      pathname: "../screens/CustomerDetail",
-      params: { customer: JSON.stringify(customer) },
+      pathname: "../screens/EditMeasurement",
+      params: { measurement: JSON.stringify(measurement) },
     });
+    onEdit();
   };
 
   return (
-    <TouchableOpacity onPress={handleCustomer} accessible={false}>
-      <View style={styles.container}>
-        <Text style={styles.label}>تاريخ المقاس : {measurement.date}</Text>
-        <Text style={styles.label}>رقم الصفحة : {measurement.pageNumber}</Text>
-        <Text style={styles.label}>
-          عدد الثياب : {measurement.numberOfThoabs}
-        </Text>
+    <View style={styles.container}>
+      <Text style={styles.label}>تاريخ المقاس : {measurement.date}</Text>
+      <Text style={styles.label}>رقم الصفحة : {measurement.pageNumber}</Text>
+      <Text style={styles.label}>
+        عدد الثياب : {measurement.numberOfThoabs}
+      </Text>
+      <View style={styles.icons}>
+        <TouchableOpacity onPress={handleDelete} style={styles.icon}>
+          <Ionicons name="trash" size={30} color="red" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleEdit} style={styles.icon}>
+          <Ionicons name="pencil" size={30} color="blue" />
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -44,11 +81,25 @@ const styles = StyleSheet.create({
     shadowColor: "#171717",
     shadowOpacity: 0.3,
     shadowRadius: 3,
+    position: "relative",
   },
   label: {
     marginLeft: 3,
     fontSize: 17,
     textAlign: "right",
+  },
+  icons: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    backgroundColor: "white",
+    padding: 10,
+  },
+  icon: {
+    marginRight: 10,
   },
 });
 

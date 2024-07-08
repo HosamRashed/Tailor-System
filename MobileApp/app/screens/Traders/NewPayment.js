@@ -14,6 +14,7 @@ import {
 import { useRouter, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,9 +24,14 @@ const { width, height } = Dimensions.get("window");
 const NewPayment = () => {
   const url = useSelector((state) => state.user.url);
   const shopID = useSelector((state) => state.user.user._id);
+  const route = useRoute();
 
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const { trader } = route.params;
+  const traderObj = JSON.parse(trader);
+  const traderID = traderObj._id;
 
   const initialValues = {
     paymentAmount: "",
@@ -39,16 +45,16 @@ const NewPayment = () => {
       .typeError("المبلغ يجب أن يكون رقمًا")
       .positive("المبلغ يجب أن يكون أكبر من صفر")
       .min(0.01, "المبلغ يجب أن يكون أكبر من صفر")
+      .max(
+        traderObj.remainingAmount,
+        `المبلغ يجب أن يكون أقل من أو يساوي ${traderObj.remainingAmount}`
+      )
       .nullable(),
+    notes: yup.string().nullable(),
   });
-  // /:shopID/traders/:traderID/insert
+
   const handleRequest = async (values) => {
-    const { traderName, phoneNumber, moneyAmount } = values;
-    const completeUrl = `${url}/shops/${shopID}/traders/insert`; // Ensure shopID is defined
-    const data = {
-      notes,
-      paymentAmount,
-    };
+    const completeUrl = `${url}/shops/${shopID}/traders/${traderID}/payments/insert`;
 
     try {
       const response = await fetch(completeUrl, {
@@ -56,19 +62,17 @@ const NewPayment = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(values),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to add customer");
+        throw new Error(errorData.message || "Failed to add payment");
       }
-
-      Alert.alert("Trader added successfully");
       router.back();
     } catch (error) {
       Alert.alert("Error", error.message);
-      console.error("Error adding trader:", error);
+      console.error("Error adding payment:", error);
     }
   };
 
@@ -84,13 +88,11 @@ const NewPayment = () => {
               headerShown: false,
             }}
           />
-          <TouchableOpacity style={styles.homeIcon}>
-            <Ionicons
-              name="arrow-back"
-              size={32}
-              color="black"
-              onPress={() => router.back("../home")}
-            />
+          <TouchableOpacity
+            style={styles.homeIcon}
+            onPress={() => router.back("../home")}
+          >
+            <Ionicons name="arrow-back" size={32} color="black" />
           </TouchableOpacity>
 
           <Formik
@@ -112,30 +114,26 @@ const NewPayment = () => {
                   placeholder="مبلغ الدفعه"
                   placeholderTextColor="#ccc"
                   textAlign="right"
-                  onChangeText={handleChange("traderName")}
-                  onBlur={handleBlur("traderName")}
-                  value={values.traderName}
+                  onChangeText={handleChange("paymentAmount")}
+                  onBlur={handleBlur("paymentAmount")}
+                  value={values.paymentAmount}
+                  keyboardType="numeric"
                 />
-                {touched.traderName && errors.traderName && (
-                  <Text style={styles.errorText}>{errors.traderName}</Text>
-                )}
-
-                {touched.phoneNumber && errors.phoneNumber && (
-                  <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+                {touched.paymentAmount && errors.paymentAmount && (
+                  <Text style={styles.errorText}>{errors.paymentAmount}</Text>
                 )}
 
                 <TextInput
                   style={styles.input}
-                  keyboardType="default"
                   placeholder="ملاحظه"
                   placeholderTextColor="#ccc"
                   textAlign="right"
-                  onChangeText={handleChange("moneyAmount")}
-                  onBlur={handleBlur("moneyAmount")}
-                  value={values.moneyAmount}
+                  onChangeText={handleChange("notes")}
+                  onBlur={handleBlur("notes")}
+                  value={values.notes}
                 />
-                {touched.moneyAmount && errors.moneyAmount && (
-                  <Text style={styles.errorText}>{errors.moneyAmount}</Text>
+                {touched.notes && errors.notes && (
+                  <Text style={styles.errorText}>{errors.notes}</Text>
                 )}
 
                 <TouchableOpacity
@@ -171,7 +169,7 @@ const styles = StyleSheet.create({
   },
   homeIcon: {
     position: "absolute",
-    top: Platform.OS === "ios" ? 20 : 10, // Adjusting for potential status bar height on iOS
+    top: Platform.OS === "ios" ? 20 : 10,
     left: 15,
     zIndex: 1,
   },

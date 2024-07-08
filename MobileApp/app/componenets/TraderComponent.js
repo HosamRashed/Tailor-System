@@ -16,7 +16,7 @@ const TraderComponent = ({ trader }) => {
   const handleTrader = () => {
     router.push({
       pathname: "../Traders/TraderDetails",
-      params: { trader: JSON.stringify(trader) },
+      params: { traderID: JSON.stringify(trader._id) },
     });
   };
 

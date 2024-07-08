@@ -37,7 +37,7 @@ const CustomerDetail = () => {
 
   const handleRequest = () => {
     setLoading(true);
-    const completeUrl = `${url}/shops/${shopID}/${customerID}/measurments`;
+    const completeUrl = `${url}/shops/${shopID}/${customerID}/measurements`;
 
     fetch(completeUrl, {
       method: "GET",
@@ -63,6 +63,17 @@ const CustomerDetail = () => {
         Alert.alert("Request error", error.message);
         console.log(error.message);
       });
+  };
+
+  const handleDelete = (id) => {
+    setMeasurements(
+      measurements.filter((measurement) => measurement._id !== id)
+    );
+    // handleRequest();
+  };
+
+  const handleEdit = () => {
+    handleRequest();
   };
 
   return (
@@ -93,7 +104,12 @@ const CustomerDetail = () => {
               data={measurements}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
-                <MeasurementComponent measurement={item} />
+                <MeasurementComponent
+                  measurement={item}
+                  onDelete={handleDelete}
+                  onEdit={handleEdit}
+                  customerID={customerID}
+                />
               )}
               contentContainerStyle={styles.measurementsList}
             />
@@ -167,7 +183,6 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 20,
   },
-
   noDataText: {
     textAlign: "center",
     fontSize: 18,

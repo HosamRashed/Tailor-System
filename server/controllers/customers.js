@@ -127,6 +127,13 @@ const getAllShopcustomer = async (req, res) => {
   }
 };
 
+const convertArabicToEnglishNumbers = (text) => {
+  const arabicNumbers = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+  return text.replace(/[\u0660-\u0669]/g, (match) =>
+    arabicNumbers.indexOf(match)
+  );
+};
+
 const findCustomersByName = async (req, res) => {
   try {
     const { shopID } = req.params;
@@ -163,7 +170,10 @@ const findCustomersByName = async (req, res) => {
 const findCustomersByPhoneNumber = async (req, res) => {
   try {
     const { shopID } = req.params;
-    const { CustomerInfo } = req.body;
+    let { CustomerInfo } = req.body;
+
+    // Convert Arabic numbers to English numbers
+    CustomerInfo = convertArabicToEnglishNumbers(CustomerInfo);
 
     // Validate shopID
     if (!mongoose.Types.ObjectId.isValid(shopID)) {
@@ -175,7 +185,7 @@ const findCustomersByPhoneNumber = async (req, res) => {
       return res.status(404).json({ message: "Shop not found" });
     }
 
-    // Find customers with matching name in the specific shop
+    // Find customers with matching phone number in the specific shop
     const matchingCustomerIDs = shop.customers
       .filter((customer) => customer.phoneNumber === CustomerInfo)
       .map((customer) => customer._id);

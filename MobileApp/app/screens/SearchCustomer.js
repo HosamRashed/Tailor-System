@@ -176,18 +176,24 @@ const SearchCustomer = () => {
                 </View>
               )}
             </Formik>
-            <Text style={styles.searchTitle}>الزبائن المطابقين للبحث</Text>
           </View>
         </TouchableWithoutFeedback>
         {loading ? (
-          <ActivityIndicator size="large" color="#90ee90" />
-        ) : results.length > 0 ? (
-          <FlatList
-            data={results}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => <CustomerComponent customer={item} />}
-            contentContainerStyle={styles.resultsList}
+          <ActivityIndicator
+            size="large"
+            color="#90ee90"
+            style={styles.activityIndicator}
           />
+        ) : results.length > 0 ? (
+          <>
+            <Text style={styles.searchTitle}>الزبائن المطابقين للبحث</Text>
+            <FlatList
+              data={results}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => <CustomerComponent customer={item} />}
+              contentContainerStyle={styles.resultsList}
+            />
+          </>
         ) : (
           <Text style={styles.noDataText}>{noData}</Text>
         )}
@@ -217,8 +223,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "right",
   },
+  activityIndicator: {
+    marginTop: 15,
+  },
   searchTitle: {
-    marginVertical: 10,
+    marginVertical: 20,
     fontSize: Platform.isPad ? 26 : 20,
     textAlign: "right",
   },

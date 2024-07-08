@@ -1,37 +1,71 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { useSelector } from "react-redux";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
-const PaymentComponent = ({ payment }) => {
-  console.log(payment);
-  const router = useRouter();
+const PaymentComponent = ({ payment, traderID, onDelete }) => {
+  const url = useSelector((state) => state.user.url);
+  const shopID = useSelector((state) => state.user.user._id);
 
-  const handleEdit = () => {
-    // Handle edit action
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
-  const handleDelete = () => {
-    // Handle delete action
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(
+        `${url}/shops/${shopID}/traders/${traderID}/${payment._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete payment");
+      }
+      onDelete(); // Call the callback function to update the payments list
+    } catch (error) {
+      Alert.alert("Error", error.message);
+      console.error("Error deleting payment:", error);
+    }
+  };
+  const confirmDelete = () => {
+    Alert.alert(
+      "تأكيد الحذف",
+      "هل أنت متأكد أنك تريد حذف هذه الدفعة؟",
+      [
+        {
+          text: "إلغاء",
+          style: "cancel",
+        },
+        {
+          text: "حذف",
+          onPress: handleDelete,
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   return (
-    <TouchableOpacity accessible={false}>
+    <View accessible={false}>
       <View style={styles.container}>
-        {/* <Text style={styles.label}>اسم الموزع : {trader.name}</Text>
-        <Text style={styles.label}>رقم الجوال : {trader.phoneNumber}</Text>
+        <Text style={styles.label}>مبلغ الدفعة : {payment.paymentAmount}</Text>
+        <Text style={styles.label}>ملاحظه : {payment.notes}</Text>
         <Text style={styles.label}>
-          المبلغ المتبقي : {trader.remainingAmount}
-        </Text> */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-            <Text style={styles.buttonText}>تعديل</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-            <Text style={styles.buttonText}>حذف</Text>
-          </TouchableOpacity>
-        </View>
+          تاريخ الدفعه : {formatDate(payment.date)}
+        </Text>
+
+        <TouchableOpacity style={styles.deleteButton} onPress={confirmDelete}>
+          <Ionicons name="trash-outline" size={35} color="red" />
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -42,6 +76,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     borderRadius: 10,
     padding: 10,
+    paddingHorizontal: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -53,28 +88,12 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginBottom: 5,
   },
-  buttonContainer: {
-    position: "absolute",
-    bottom: 10,
-    left: 10,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    marginTop: 10,
-  },
-  editButton: {
-    marginRight: 8,
-    backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 5,
-  },
   deleteButton: {
-    backgroundColor: "#F44336",
+    position: "absolute",
+    bottom: 0,
+    backgroundColor: "white",
     padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 13,
+    // borderRadius: 5,
   },
 });
 

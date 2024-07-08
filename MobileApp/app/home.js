@@ -54,6 +54,12 @@ const Home = () => {
           style={styles.button}
           onPress={() => navigateTo("/screens/SearchCustomer")}
         >
+          <Text style={styles.buttonText}>استخدام مقاس قديم لتفصيل ثوب جديد</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigateTo("/screens/SearchCustomer")}
+        >
           <Text style={styles.buttonText}>البحث عن عميل</Text>
         </TouchableOpacity>
         <TouchableOpacity

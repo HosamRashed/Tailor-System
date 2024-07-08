@@ -60,7 +60,7 @@ const NewCustomer = () => {
       .then((res) => {
         if (res._id) {
           // Assuming res contains the new customer object
-          Alert.alert("Customer added successfully");
+          Alert.alert("تم إضافة الزبون !");
           router.back("/home");
         } else {
           Alert.alert("Adding customer failed", res.message || res.error);

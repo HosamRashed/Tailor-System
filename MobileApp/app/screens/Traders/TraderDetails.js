@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   SafeAreaView,
   View,
@@ -11,7 +11,7 @@ import {
   Alert,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter, Stack } from "expo-router";
+import { useFocusEffect, useRouter, Stack } from "expo-router";
 import { useRoute } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import PaymentComponent from "../../componenets/PaymentComponent"; // Adjust the path according to your project structure
@@ -19,23 +19,24 @@ import PaymentComponent from "../../componenets/PaymentComponent"; // Adjust the
 const TraderDetails = () => {
   const url = useSelector((state) => state.user.url);
   const shopID = useSelector((state) => state.user.user._id);
-  const [payments, setPayments] = useState([]);
+  const [traderDetails, setTraderDetails] = useState({});
   const route = useRoute();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  let [noData, setNoData] = useState("");
+  const [noData, setNoData] = useState("");
 
-  console.log(route.params);
+  const { traderID } = route.params;
+  const cleanedTraderID = traderID.replace(/^"|"$/g, "");
 
-  const { trader } = route.params;
-  const traderObj = JSON.parse(trader);
-  const traderID = traderObj._id;
-  useEffect(() => {
-    handleRequest();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      handleRequest();
+    }, [])
+  );
+
   const handleRequest = () => {
     setLoading(true);
-    const completeUrl = `${url}/shops/${shopID}/traders/${traderID}/payments`;
+    const completeUrl = `${url}/shops/${shopID}/traders/${cleanedTraderID}`;
 
     fetch(completeUrl, {
       method: "GET",
@@ -46,8 +47,11 @@ const TraderDetails = () => {
       .then((response) => response.json())
       .then((res) => {
         setLoading(false);
-        if (res.length > 0) {
-          setPayments(res);
+        if (res && res.payments) {
+          setTraderDetails(res);
+          if (res.payments.length === 0) {
+            setNoData("لا يوجد دفعات سابقة !");
+          }
         } else {
           setNoData("لا يوجد دفعات سابقة !");
         }
@@ -74,23 +78,29 @@ const TraderDetails = () => {
           <Ionicons name="arrow-back" size={32} color="black" />
         </TouchableOpacity>
         <View style={styles.box}>
-          <Text style={styles.label}>اسم المندوب : {traderObj.name}</Text>
+          <Text style={styles.label}>اسم المندوب : {traderDetails.name}</Text>
           <Text style={styles.label}>
-            المبلغ الأساسي : {traderObj.moneyAmount}
+            المبلغ الأساسي : {traderDetails.moneyAmount}
           </Text>
           <Text style={styles.label}>
-            المبلغ المتبقي : {traderObj.remainingAmount}
+            المبلغ المتبقي : {traderDetails.remainingAmount}
           </Text>
         </View>
         {loading ? (
           <ActivityIndicator size="large" color="#90ee90" />
-        ) : payments.length > 0 ? (
+        ) : traderDetails.payments && traderDetails.payments.length > 0 ? (
           <>
             <Text style={styles.searchTitle}>تفاصيل الدفعات :</Text>
             <FlatList
-              data={payments}
+              data={traderDetails.payments}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => <PaymentComponent payment={item} />}
+              renderItem={({ item }) => (
+                <PaymentComponent
+                  payment={item}
+                  traderID={cleanedTraderID}
+                  onDelete={handleRequest} // Pass the delete callback function
+                />
+              )}
               contentContainerStyle={styles.paymentsList}
             />
           </>
@@ -101,7 +111,10 @@ const TraderDetails = () => {
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => {
-              router.push("./NewPayment");
+              router.push({
+                pathname: "./NewPayment",
+                params: { trader: JSON.stringify(traderDetails) },
+              });
             }}
           >
             <Text style={styles.addButtonText}>إضافة دفعه جديده</Text>

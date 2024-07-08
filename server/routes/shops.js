@@ -32,7 +32,6 @@ const {
   getTraders,
   getAllTraderPayments,
   insertPayment,
-  updatePayment,
   deletePayment,
 } = require("../controllers/trader");
 
@@ -70,13 +69,13 @@ router.put(
   "/:shopID/:customerID/measurments/:measurementID",
   updateMeasurement
 );
-router.get("/:shopID/:customerID/measurments/", getAllMeasurements);
+router.get("/:shopID/:customerID/measurements/", getAllMeasurements);
 router.get(
   "/:shopID/:customerID/measurments/:measurmentID",
   getSpecificMeasurement
 );
 router.delete(
-  "/:shopID/:customerID/measurments/:measurementID",
+  "/:shopID/:customerID/measurements/:measurementID",
   deleteMeasurement
 );
 
@@ -90,8 +89,7 @@ router.get("/:shopID/traders/:traderID", getTrader);
 // shops' traders payments
 
 router.get("/:shopID/traders/:traderID/payments", getAllTraderPayments);
-router.post("/:shopID/traders/:traderID/insert", insertPayment);
-router.put("/:shopID/traders/:traderID/:paymentID", updatePayment);
+router.post("/:shopID/traders/:traderID/payments/insert", insertPayment);
 router.delete("/:shopID/traders/:traderID/:paymentID", deletePayment);
 
 // // insert update delete measurments into a specific trader's info
