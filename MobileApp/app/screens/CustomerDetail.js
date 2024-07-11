@@ -78,21 +78,21 @@ const CustomerDetail = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <TouchableOpacity
+        style={styles.homeIcon}
+        onPress={() => router.back("../home")}
+      >
+        <Stack.Screen
+          options={{
+            headerStyle: { backgroundColor: "#fff" },
+            headerShadowVisible: true,
+            headerTitle: "",
+            headerShown: false,
+          }}
+        />
+        <Ionicons name="arrow-back" size={32} color="black" />
+      </TouchableOpacity>
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.homeIcon}
-          onPress={() => router.back("../home")}
-        >
-          <Stack.Screen
-            options={{
-              headerStyle: { backgroundColor: "#fff" },
-              headerShadowVisible: true,
-              headerTitle: "",
-              headerShown: false,
-            }}
-          />
-          <Ionicons name="arrow-back" size={32} color="black" />
-        </TouchableOpacity>
         <Text style={styles.customerName}>{customerObj.fullName}</Text>
 
         {loading ? (
@@ -121,7 +121,7 @@ const CustomerDetail = () => {
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => {
-              /* Handle adding new measurement */
+              router.push("./AddNewMeasurement");
             }}
           >
             <Text style={styles.addButtonText}>إضافة قياس جديد</Text>
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   homeIcon: {
     top: Platform.OS === "ios" ? 10 : 10,
-    left: 0,
+    left: 16,
     zIndex: 1,
   },
   customerName: {

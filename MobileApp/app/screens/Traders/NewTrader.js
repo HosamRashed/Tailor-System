@@ -82,6 +82,14 @@ const NewTrader = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView style={styles.safeArea}>
+        <TouchableOpacity style={styles.homeIcon}>
+          <Ionicons
+            name="arrow-back"
+            size={32}
+            color="black"
+            onPress={() => router.back("../home")}
+          />
+        </TouchableOpacity>
         <View style={styles.container}>
           <Stack.Screen
             options={{
@@ -91,14 +99,6 @@ const NewTrader = () => {
               headerShown: false,
             }}
           />
-          <TouchableOpacity style={styles.homeIcon}>
-            <Ionicons
-              name="arrow-back"
-              size={32}
-              color="black"
-              onPress={() => router.back("../home")}
-            />
-          </TouchableOpacity>
 
           <Formik
             initialValues={initialValues}
@@ -187,9 +187,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   homeIcon: {
-    position: "absolute",
-    top: Platform.OS === "ios" ? 20 : 10, // Adjusting for potential status bar height on iOS
-    left: 15,
+    top: Platform.OS === "ios" ? 10 : 10, // Adjusting for potential status bar height on iOS
+    left: 16,
     zIndex: 1,
   },
   input: {

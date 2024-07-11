@@ -63,8 +63,22 @@ const TraderDetails = () => {
       });
   };
 
+  const handleAddPaymentPress = () => {
+    if (traderDetails.remainingAmount === 0) {
+      Alert.alert(`لا يوجد مبلغ متبقي للمندوب !`);
+    } else {
+      router.push({
+        pathname: "./NewPayment",
+        params: { trader: JSON.stringify(traderDetails) },
+      });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      <TouchableOpacity style={styles.homeIcon} onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={32} color="black" />
+      </TouchableOpacity>
       <View style={styles.container}>
         <Stack.Screen
           options={{
@@ -74,9 +88,7 @@ const TraderDetails = () => {
             headerShown: false,
           }}
         />
-        <TouchableOpacity style={styles.homeIcon} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={32} color="black" />
-        </TouchableOpacity>
+
         <View style={styles.box}>
           <Text style={styles.label}>اسم المندوب : {traderDetails.name}</Text>
           <Text style={styles.label}>
@@ -110,12 +122,7 @@ const TraderDetails = () => {
         <View style={styles.bottomButtonsContainer}>
           <TouchableOpacity
             style={styles.addButton}
-            onPress={() => {
-              router.push({
-                pathname: "./NewPayment",
-                params: { trader: JSON.stringify(traderDetails) },
-              });
-            }}
+            onPress={handleAddPaymentPress}
           >
             <Text style={styles.addButtonText}>إضافة دفعه جديده</Text>
           </TouchableOpacity>
@@ -136,12 +143,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   homeIcon: {
-    top: Platform.OS === "ios" ? 10 : 10,
-    left: 0,
+    top: Platform.OS === "ios" ? 10 : 10, // Adjusting for potential status bar height on iOS
+    left: 16,
     zIndex: 1,
+    marginBottom: 10,
   },
   box: {
-    marginTop: 30,
     borderWidth: 1,
     borderColor: "#000",
     padding: 20,

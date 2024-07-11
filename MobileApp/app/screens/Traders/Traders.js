@@ -100,6 +100,12 @@ const Traders = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <TouchableOpacity
+        style={styles.homeIcon}
+        onPress={() => router.back("../home")}
+      >
+        <Ionicons name="arrow-back" size={32} color="black" />
+      </TouchableOpacity>
       <View style={styles.container}>
         <Stack.Screen
           options={{
@@ -111,12 +117,6 @@ const Traders = () => {
         />
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View>
-            <TouchableOpacity
-              style={styles.homeIcon}
-              onPress={() => router.back("../home")}
-            >
-              <Ionicons name="arrow-back" size={32} color="black" />
-            </TouchableOpacity>
             <Text style={styles.title}>قائمة الموزعين</Text>
             <Formik
               initialValues={{ searchText: "" }}
@@ -203,12 +203,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   homeIcon: {
-    position: "absolute",
-    top: Platform.OS === "ios" ? 10 : 10,
+    top: Platform.OS === "ios" ? 10 : 10, // Adjusting for potential status bar height on iOS
+    left: 16,
     zIndex: 1,
   },
   title: {
-    marginTop: 40,
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "right",

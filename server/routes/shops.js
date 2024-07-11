@@ -92,23 +92,4 @@ router.get("/:shopID/traders/:traderID/payments", getAllTraderPayments);
 router.post("/:shopID/traders/:traderID/payments/insert", insertPayment);
 router.delete("/:shopID/traders/:traderID/:paymentID", deletePayment);
 
-// // insert update delete measurments into a specific trader's info
-// router.post(
-//   "/:shopID/:traderID/payements/insert",
-//   verifyToken,
-//   insertNewPayment
-// );
-// router.put(
-//   "/:shopID/:traderID/payments/:paymentID",
-//   verifyToken,
-//   updatepayment
-// );
-// router.get("/:shopID/:traderID/payments/", verifyToken, getAllPayments);
-// router.delete(
-//   "/:shopID/:traderID/payments/:paymentID",
-//   verifyToken,
-//   deletePayment
-// );
-
-// export default router;
 module.exports = router;

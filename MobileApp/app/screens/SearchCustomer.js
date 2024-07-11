@@ -93,6 +93,12 @@ const SearchCustomer = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <TouchableOpacity
+        style={styles.homeIcon}
+        onPress={() => router.back("../home")}
+      >
+        <Ionicons name="arrow-back" size={32} color="black" />
+      </TouchableOpacity>
       <View style={styles.container}>
         <Stack.Screen
           options={{
@@ -104,12 +110,6 @@ const SearchCustomer = () => {
         />
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View>
-            <TouchableOpacity
-              style={styles.homeIcon}
-              onPress={() => router.back("../home")}
-            >
-              <Ionicons name="arrow-back" size={32} color="black" />
-            </TouchableOpacity>
             <Text style={styles.title}>ابحث عن الزبون</Text>
             <Formik
               initialValues={initialValues}
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   },
   homeIcon: {
     top: Platform.OS === "ios" ? 10 : 10, // Adjusting for potential status bar height on iOS
-    left: 0,
+    left: 16,
     zIndex: 1,
   },
   title: {
