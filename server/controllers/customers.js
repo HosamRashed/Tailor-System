@@ -127,13 +127,6 @@ const getAllShopcustomer = async (req, res) => {
   }
 };
 
-const convertArabicToEnglishNumbers = (text) => {
-  const arabicNumbers = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
-  return text.replace(/[\u0660-\u0669]/g, (match) =>
-    arabicNumbers.indexOf(match)
-  );
-};
-
 const findCustomersByName = async (req, res) => {
   try {
     const { shopID } = req.params;
@@ -165,6 +158,22 @@ const findCustomersByName = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+};
+
+const convertArabicToEnglishNumbers = (text) => {
+  const arabicToEnglishMap = {
+    "٠": "0",
+    "١": "1",
+    "٢": "2",
+    "٣": "3",
+    "٤": "4",
+    "٥": "5",
+    "٦": "6",
+    "٧": "7",
+    "٨": "8",
+    "٩": "9",
+  };
+  return text.replace(/[\u0660-\u0669]/g, (match) => arabicToEnglishMap[match]);
 };
 
 const findCustomersByPhoneNumber = async (req, res) => {

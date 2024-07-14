@@ -7,7 +7,6 @@ const mongoose = require("mongoose"); // Import mongoose
 
 /* CREATE */
 const insertNewMeasurement = async (req, res) => {
-  //   "/:shopID/customers/:customerID/measurments/insert",
   try {
     const { shopID, customerID } = req.params;
     const measurementData = req.body;

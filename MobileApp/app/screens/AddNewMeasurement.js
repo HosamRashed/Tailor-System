@@ -9,16 +9,108 @@ import {
   Platform,
   Dimensions,
   ScrollView,
+  Alert,
   SafeAreaView,
 } from "react-native";
 import { Formik } from "formik";
-import { COLORS } from "../../constants";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import * as yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 
+// Function to convert Arabic numbers to English numbers
+const convertArabicToEnglishNumbers = (text) => {
+  const arabicToEnglishMap = {
+    "٠": "0",
+    "١": "1",
+    "٢": "2",
+    "٣": "3",
+    "٤": "4",
+    "٥": "5",
+    "٦": "6",
+    "٧": "7",
+    "٨": "8",
+    "٩": "9",
+    "،": ",", // Arabic comma to English comma
+    "٫": ".", // Arabic decimal separator to English decimal point
+  };
+
+  return text.replace(
+    /[\u0660-\u0669،٫]/g,
+    (match) => arabicToEnglishMap[match]
+  );
+};
+
+// Function to convert both Arabic numbers and letters to English
+const convertArabicToEnglish = (text) => {
+  const numbersConverted = convertArabicToEnglishNumbers(text);
+  console.log(numbersConverted);
+  return numbersConverted;
+};
+
 const AddNewMeasurement = () => {
+  const url = useSelector((state) => state.user.url);
+  const shopID = useSelector((state) => state.user.user._id);
   const router = useRouter();
+  const route = useRoute();
+
+  const { customerId } = route.params;
+  const CustomerID = customerId.substring(1, customerId.length - 1);
+  console.log(customerId);
+
+  const initialValues = {
+    pageNumber: "",
+    numberOfThoabs: "",
+    height: "",
+    shoulder: "",
+    armLength: "",
+    armWidthTopPart: "",
+    armWidthMiddlePart: "",
+    wristWidth: "",
+    wristHeight: "",
+    wristShapeType: "",
+    bodyWidth: "",
+    chestWidth: "",
+    bottomThobWidth: "",
+    neckHeight: "",
+    neckWidth: "",
+    neckType: "",
+    jbjorHeight: "",
+    jbjorType: "",
+    additionalRequirements: "",
+  };
+
+  const handleRequest = (values) => {
+    // Convert values to English
+    const convertedValues = Object.keys(values).reduce((acc, key) => {
+      acc[key] = convertArabicToEnglish(values[key]);
+      return acc;
+    }, {});
+
+    const completeUrl = `${url}/shops/${shopID}/${CustomerID}/measurments/insert`;
+    console.log(completeUrl);
+    fetch(completeUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(convertedValues),
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        if (res._id) {
+          Alert.alert("تم إضافة المقاس !");
+          router.back();
+        } else {
+          Alert.alert("Adding measurement failed", res.message || res.error);
+        }
+      })
+      .catch((error) => {
+        Alert.alert("Request error", error.message);
+      });
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -38,33 +130,7 @@ const AddNewMeasurement = () => {
           }}
         />
 
-        <Formik
-          initialValues={{
-            pageNumber: "",
-            numberOfThobes: "",
-            length: "",
-            shoulder: "",
-            armLength: "",
-            upperArmWidth: "",
-            midArmWidth: "",
-            wrestWidth: "",
-            wrestHeight: "",
-            wrestType: "",
-            chestWidth: "",
-            bodyWidth: "",
-            underfootWidth: "",
-            neckHeight: "",
-            neckWidth: "",
-            jizoorLength: "",
-            jizoorType: "",
-            neckType: "",
-            additionalDetails: "",
-          }}
-          onSubmit={(values) => {
-            console.log(values);
-            // Handle form submission
-          }}
-        >
+        <Formik initialValues={initialValues} onSubmit={handleRequest}>
           {({ handleChange, handleBlur, handleSubmit, values }) => (
             <View style={styles.form}>
               <View style={styles.row}>
@@ -85,9 +151,9 @@ const AddNewMeasurement = () => {
                     style={styles.input}
                     placeholderTextColor="#ccc"
                     keyboardType="decimal-pad"
-                    onChangeText={handleChange("numberOfThobes")}
-                    onBlur={handleBlur("numberOfThobes")}
-                    value={values.numberOfThobes}
+                    onChangeText={handleChange("numberOfThoabs")}
+                    onBlur={handleBlur("numberOfThoabs")}
+                    value={values.numberOfThoabs}
                   />
                 </View>
               </View>
@@ -109,33 +175,33 @@ const AddNewMeasurement = () => {
                     style={styles.input}
                     placeholderTextColor="#ccc"
                     keyboardType="decimal-pad"
-                    onChangeText={handleChange("length")}
-                    onBlur={handleBlur("length")}
-                    value={values.length}
+                    onChangeText={handleChange("height")}
+                    onBlur={handleBlur("height")}
+                    value={values.height}
                   />
                 </View>
               </View>
               <View style={styles.row}>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>عرض (العالي)</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholderTextColor="#ccc"
-                    keyboardType="decimal-pad"
-                    onChangeText={handleChange("upperArmWidth")}
-                    onBlur={handleBlur("upperArmWidth")}
-                    value={values.upperArmWidth}
-                  />
-                </View>
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>عرض (الوسط)</Text>
                   <TextInput
                     style={styles.input}
                     placeholderTextColor="#ccc"
                     keyboardType="decimal-pad"
-                    onChangeText={handleChange("midArmWidth")}
-                    onBlur={handleBlur("midArmWidth")}
-                    value={values.midArmWidth}
+                    onChangeText={handleChange("armWidthMiddlePart")}
+                    onBlur={handleBlur("armWidthMiddlePart")}
+                    value={values.armWidthMiddlePart}
+                  />
+                </View>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>عرض (العالي)</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholderTextColor="#ccc"
+                    keyboardType="decimal-pad"
+                    onChangeText={handleChange("armWidthTopPart")}
+                    onBlur={handleBlur("armWidthTopPart")}
+                    value={values.armWidthTopPart}
                   />
                 </View>
                 <View style={styles.inputGroup}>
@@ -156,9 +222,9 @@ const AddNewMeasurement = () => {
                   <TextInput
                     style={styles.input}
                     placeholderTextColor="#ccc"
-                    onChangeText={handleChange("wrestType")}
-                    onBlur={handleBlur("wrestType")}
-                    value={values.wrestType}
+                    onChangeText={handleChange("wristShapeType")}
+                    onBlur={handleBlur("wristShapeType")}
+                    value={values.wristShapeType}
                   />
                 </View>
                 <View style={styles.inputGroup}>
@@ -167,9 +233,9 @@ const AddNewMeasurement = () => {
                     style={styles.input}
                     placeholderTextColor="#ccc"
                     keyboardType="decimal-pad"
-                    onChangeText={handleChange("wrestHeight")}
-                    onBlur={handleBlur("wrestHeight")}
-                    value={values.wrestHeight}
+                    onChangeText={handleChange("wristHeight")}
+                    onBlur={handleBlur("wristHeight")}
+                    value={values.wristHeight}
                   />
                 </View>
                 <View style={styles.inputGroup}>
@@ -178,9 +244,9 @@ const AddNewMeasurement = () => {
                     style={styles.input}
                     placeholderTextColor="#ccc"
                     keyboardType="decimal-pad"
-                    onChangeText={handleChange("wrestWidth")}
-                    onBlur={handleBlur("wrestWidth")}
-                    value={values.wrestWidth}
+                    onChangeText={handleChange("wristWidth")}
+                    onBlur={handleBlur("wristWidth")}
+                    value={values.wristWidth}
                   />
                 </View>
               </View>
@@ -196,8 +262,6 @@ const AddNewMeasurement = () => {
                     value={values.chestWidth}
                   />
                 </View>
-              </View>
-              <View style={styles.row}>
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>عرض الجسم</Text>
                   <TextInput
@@ -210,6 +274,7 @@ const AddNewMeasurement = () => {
                   />
                 </View>
               </View>
+              <View style={styles.row}></View>
               <View style={styles.row}>
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>نوع الرقبه</Text>
@@ -219,6 +284,18 @@ const AddNewMeasurement = () => {
                     onChangeText={handleChange("neckType")}
                     onBlur={handleBlur("neckType")}
                     value={values.neckType}
+                  />
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>ارتفاع الرقبه</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholderTextColor="#ccc"
+                    keyboardType="decimal-pad"
+                    onChangeText={handleChange("neckHeight")}
+                    onBlur={handleBlur("neckHeight")}
+                    value={values.neckHeight}
                   />
                 </View>
                 <View style={styles.inputGroup}>
@@ -232,17 +309,6 @@ const AddNewMeasurement = () => {
                     value={values.neckWidth}
                   />
                 </View>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>ارتفاع الرقبه</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholderTextColor="#ccc"
-                    keyboardType="decimal-pad"
-                    onChangeText={handleChange("neckHeight")}
-                    onBlur={handleBlur("neckHeight")}
-                    value={values.neckHeight}
-                  />
-                </View>
               </View>
               <View style={styles.row}>
                 <View style={styles.inputGroup}>
@@ -250,9 +316,9 @@ const AddNewMeasurement = () => {
                   <TextInput
                     style={styles.input}
                     placeholderTextColor="#ccc"
-                    onChangeText={handleChange("jizoorType")}
-                    onBlur={handleBlur("jizoorType")}
-                    value={values.jizoorType}
+                    onChangeText={handleChange("jbjorType")}
+                    onBlur={handleBlur("jbjorType")}
+                    value={values.jbjorType}
                   />
                 </View>
                 <View style={styles.inputGroup}>
@@ -261,36 +327,36 @@ const AddNewMeasurement = () => {
                     style={styles.input}
                     placeholderTextColor="#ccc"
                     keyboardType="decimal-pad"
-                    onChangeText={handleChange("jizoorLength")}
-                    onBlur={handleBlur("jizoorLength")}
-                    value={values.jizoorLength}
+                    onChangeText={handleChange("jbjorHeight")}
+                    onBlur={handleBlur("jbjorHeight")}
+                    value={values.jbjorHeight}
                   />
                 </View>
               </View>
               <View style={styles.row}>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>اي تفاصيل زياده ؟</Text>
+                  <TextInput
+                    style={styles.inputFull}
+                    placeholderTextColor="#ccc"
+                    onChangeText={handleChange("additionalRequirements")}
+                    onBlur={handleBlur("additionalRequirements")}
+                    value={values.additionalRequirements}
+                  />
+                </View>
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>عرض الثوب تحت</Text>
                   <TextInput
                     style={styles.input}
                     placeholderTextColor="#ccc"
-                    onChangeText={handleChange("underfootWidth")}
-                    onBlur={handleBlur("underfootWidth")}
-                    value={values.underfootWidth}
+                    keyboardType="decimal-pad"
+                    onChangeText={handleChange("bottomThobWidth")}
+                    onBlur={handleBlur("bottomThobWidth")}
+                    value={values.bottomThobWidth}
                   />
                 </View>
               </View>
-              <View style={styles.row}>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>اي تفاصيل زياده</Text>
-                  <TextInput
-                    style={styles.inputFull}
-                    placeholderTextColor="#ccc"
-                    onChangeText={handleChange("additionalDetails")}
-                    onBlur={handleBlur("additionalDetails")}
-                    value={values.additionalDetails}
-                  />
-                </View>
-              </View>
+
               <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>حفظ</Text>
               </TouchableOpacity>
@@ -308,17 +374,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   container: {
-    flexGrow: 1,
-    padding: 16,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    // borderWidth: 1,
     backgroundColor: "#fff",
   },
   homeIcon: {
     top: Platform.OS === "ios" ? 10 : 10, // Adjusting for potential status bar height on iOS
     left: 15,
     zIndex: 1,
+    width: "20%",
   },
   form: {
-    marginTop: 20,
+    // borderWidth: 1,
+    marginTop: 10,
     width: width * 0.9,
   },
   row: {
@@ -337,7 +407,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#ccc",
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 5,
@@ -345,9 +415,8 @@ const styles = StyleSheet.create({
   },
   inputFull: {
     flex: 1,
-    fontSize: 18,
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#ccc",
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 5,

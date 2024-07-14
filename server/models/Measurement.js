@@ -9,6 +9,7 @@ const measurementSchema = new mongoose.Schema({
   submissionDate: { type: Date },
   date: {
     type: Date,
+    default: Date.now,
   },
   numberOfThoabs: {
     type: Number,
@@ -20,27 +21,23 @@ const measurementSchema = new mongoose.Schema({
   shoulder: {
     type: Number,
   },
-  arm: {
-    length: {
-      type: Number,
-    },
-    widthTopPart: {
-      type: Number,
-    },
-    widthMiddlePart: {
-      type: Number,
-    },
+  armLength: {
+    type: Number,
   },
-  wrist: {
-    height: {
-      type: Number,
-    },
-    width: {
-      type: Number,
-    },
-    shapeType: {
-      type: String,
-    },
+  armWidthTopPart: {
+    type: Number,
+  },
+  armWidthMiddlePart: {
+    type: Number,
+  },
+  wristWidth: {
+    type: Number,
+  },
+  wristHeight: {
+    type: Number,
+  },
+  wristShapeType: {
+    type: String,
   },
   bodyWidth: {
     type: Number,
@@ -51,19 +48,20 @@ const measurementSchema = new mongoose.Schema({
   bottomThobWidth: {
     type: Number,
   },
-  neck: {
-    typeOfNeck: {
-      type: String,
-    },
-    width: {
-      type: Number,
-    },
-    height: {
-      type: Number,
-    },
+  neckHeight: {
+    type: Number,
+  },
+  neckWidth: {
+    type: Number,
+  },
+  neckType: {
+    type: String,
   },
   jbjorHeight: {
     type: Number,
+  },
+  jbjorType: {
+    type: String,
   },
   additionalRequirements: {
     type: String,

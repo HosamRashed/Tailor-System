@@ -1,17 +1,37 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { format } from "date-fns"; // Import date-fns for date formatting
-import { useRouter, Stack } from "expo-router";
+import { format, isValid, parseISO } from "date-fns"; // Import date-fns for date formatting and validation
+import { useRouter } from "expo-router";
 
 const CustomerComponent = ({ customer }) => {
   const router = useRouter();
-  // Format measurements dates to dd/MM/yyyy
-  const formattedMeasurements = customer.measurements.map((measurement) => ({
-    ...measurement,
-    date: format(new Date(measurement.date), "dd/MM/yyyy"),
-  }));
 
+  console.log(customer.measurements);
+  // Format measurements dates to dd/MM/yyyy
+  const formattedMeasurements = customer.measurements.map((measurement) => {
+    // Ensure measurement.date is a valid ISO date string or Date object
+    const parsedDate =
+      typeof measurement.date === "string"
+        ? parseISO(measurement.date)
+        : measurement.date;
+
+    // Validate parsed date
+    if (!isValid(parsedDate)) {
+      console.warn(`Invalid date format: ${measurement.date}`);
+      return {
+        ...measurement,
+        date: "تاريخ غير صالح", // Provide a fallback if date is invalid
+      };
+    }
+
+    // Format valid date to dd/MM/yyyy
+    return {
+      ...measurement,
+      date: format(parsedDate, "dd/MM/yyyy"),
+    };
+  });
+
+  // Determine last visit date
   let lastVisitDate = "أول زيارة!"; // Default message for first visit
 
   // If measurements exist, find the latest date
@@ -22,12 +42,12 @@ const CustomerComponent = ({ customer }) => {
     lastVisitDate = sortedMeasurements[0].date;
   }
 
-    const handleCustomer = () => {
-      router.push({
-        pathname: "../screens/CustomerDetail",
-        params: { customer: JSON.stringify(customer) },
-      });
-    };
+  const handleCustomer = () => {
+    router.push({
+      pathname: "../screens/CustomerDetail",
+      params: { customer: JSON.stringify(customer) },
+    });
+  };
 
   return (
     <TouchableOpacity onPress={handleCustomer} accessible={false}>

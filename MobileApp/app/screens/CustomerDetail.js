@@ -121,7 +121,10 @@ const CustomerDetail = () => {
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => {
-              router.push("./AddNewMeasurement");
+              router.push({
+                pathname: "./AddNewMeasurement",
+                params: { customerId: JSON.stringify(customerObj._id) },
+              });
             }}
           >
             <Text style={styles.addButtonText}>إضافة قياس جديد</Text>
