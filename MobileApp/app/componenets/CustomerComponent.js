@@ -6,7 +6,6 @@ import { useRouter } from "expo-router";
 const CustomerComponent = ({ customer }) => {
   const router = useRouter();
 
-  console.log(customer.measurements);
   // Format measurements dates to dd/MM/yyyy
   const formattedMeasurements = customer.measurements.map((measurement) => {
     // Ensure measurement.date is a valid ISO date string or Date object

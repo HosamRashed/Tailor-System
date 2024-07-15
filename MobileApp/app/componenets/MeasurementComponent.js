@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 
 const MeasurementComponent = (props) => {
   const router = useRouter();
-  const { measurement, onDelete, onEdit, customerID } = props;
+  const { measurement, onDelete, customerID } = props;
   const url = useSelector((state) => state.user.url);
   const shopID = useSelector((state) => state.user.user._id);
 
@@ -38,14 +38,16 @@ const MeasurementComponent = (props) => {
 
   const handleEdit = () => {
     router.push({
-      pathname: "../screens/EditMeasurement",
-      params: { measurement: JSON.stringify(measurement) },
+      pathname: "./AddNewMeasurement",
+      params: {
+        measurements: JSON.stringify(measurement),
+        customerID: customerID,
+      },
     });
-    onEdit();
   };
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={handleEdit}>
       <Text style={styles.label}>تاريخ المقاس : {measurement.date}</Text>
       <Text style={styles.label}>رقم الصفحة : {measurement.pageNumber}</Text>
       <Text style={styles.label}>
@@ -55,11 +57,8 @@ const MeasurementComponent = (props) => {
         <TouchableOpacity onPress={handleDelete} style={styles.icon}>
           <Ionicons name="trash" size={30} color="red" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleEdit} style={styles.icon}>
-          <Ionicons name="pencil" size={30} color="blue" />
-        </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

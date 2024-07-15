@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   SafeAreaView,
   View,
@@ -11,7 +11,7 @@ import {
   Alert,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter, Stack } from "expo-router";
+import { useFocusEffect, useRouter, Stack } from "expo-router";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
@@ -31,9 +31,11 @@ const CustomerDetail = () => {
   const customerObj = JSON.parse(customer);
   const customerID = customerObj._id;
 
-  useEffect(() => {
-    handleRequest();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      handleRequest();
+    }, [])
+  );
 
   const handleRequest = () => {
     setLoading(true);
@@ -69,7 +71,6 @@ const CustomerDetail = () => {
     setMeasurements(
       measurements.filter((measurement) => measurement._id !== id)
     );
-    // handleRequest();
   };
 
   const handleEdit = () => {
@@ -123,7 +124,7 @@ const CustomerDetail = () => {
             onPress={() => {
               router.push({
                 pathname: "./AddNewMeasurement",
-                params: { customerId: JSON.stringify(customerObj._id) },
+                params: { customerID: JSON.stringify(customerObj._id) },
               });
             }}
           >

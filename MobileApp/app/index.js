@@ -15,7 +15,7 @@ export default function Index() {
       const userSession = await AsyncStorage.getItem("userSession");
       if (userSession) {
         dispatch(setUserSession(JSON.parse(userSession)));
-        // router.replace("/home");
+        router.replace("/home");
       } else {
       }
     };

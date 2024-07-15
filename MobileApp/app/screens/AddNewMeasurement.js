@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Stack, useRouter } from "expo-router";
 import {
   View,
@@ -46,7 +46,6 @@ const convertArabicToEnglishNumbers = (text) => {
 // Function to convert both Arabic numbers and letters to English
 const convertArabicToEnglish = (text) => {
   const numbersConverted = convertArabicToEnglishNumbers(text);
-  console.log(numbersConverted);
   return numbersConverted;
 };
 
@@ -56,30 +55,38 @@ const AddNewMeasurement = () => {
   const router = useRouter();
   const route = useRoute();
 
-  const { customerId } = route.params;
-  const CustomerID = customerId.substring(1, customerId.length - 1);
-  console.log(customerId);
+  let { measurements, customerID } = route.params;
+  customerID = customerID.substring(0, customerID.length);
+
+  let parsedMeasurement = {};
+
+  try {
+    parsedMeasurement = measurements ? JSON.parse(measurements) : {};
+  } catch (error) {
+    console.error("Failed to parse measurements:", error);
+    Alert.alert("Error", "Failed to parse measurement data.");
+  }
 
   const initialValues = {
-    pageNumber: "",
-    numberOfThoabs: "",
-    height: "",
-    shoulder: "",
-    armLength: "",
-    armWidthTopPart: "",
-    armWidthMiddlePart: "",
-    wristWidth: "",
-    wristHeight: "",
-    wristShapeType: "",
-    bodyWidth: "",
-    chestWidth: "",
-    bottomThobWidth: "",
-    neckHeight: "",
-    neckWidth: "",
-    neckType: "",
-    jbjorHeight: "",
-    jbjorType: "",
-    additionalRequirements: "",
+    pageNumber: parsedMeasurement?.pageNumber?.toString() || "",
+    numberOfThoabs: parsedMeasurement?.numberOfThoabs?.toString() || "",
+    height: parsedMeasurement?.height?.toString() || "",
+    shoulder: parsedMeasurement?.shoulder?.toString() || "",
+    armLength: parsedMeasurement?.armLength?.toString() || "",
+    armWidthTopPart: parsedMeasurement?.armWidthTopPart?.toString() || "",
+    armWidthMiddlePart: parsedMeasurement?.armWidthMiddlePart?.toString() || "",
+    wristWidth: parsedMeasurement?.wristWidth?.toString() || "",
+    wristHeight: parsedMeasurement?.wristHeight?.toString() || "",
+    wristShapeType: parsedMeasurement?.wristShapeType || "",
+    bodyWidth: parsedMeasurement?.bodyWidth?.toString() || "",
+    chestWidth: parsedMeasurement?.chestWidth?.toString() || "",
+    bottomThobWidth: parsedMeasurement?.bottomThobWidth?.toString() || "",
+    neckHeight: parsedMeasurement?.neckHeight?.toString() || "",
+    neckWidth: parsedMeasurement?.neckWidth?.toString() || "",
+    neckType: parsedMeasurement?.neckType || "",
+    jbjorHeight: parsedMeasurement?.jbjorHeight?.toString() || "",
+    jbjorType: parsedMeasurement?.jbjorType || "",
+    additionalRequirements: parsedMeasurement?.additionalRequirements || "",
   };
 
   const handleRequest = (values) => {
@@ -89,8 +96,8 @@ const AddNewMeasurement = () => {
       return acc;
     }, {});
 
-    const completeUrl = `${url}/shops/${shopID}/${CustomerID}/measurments/insert`;
-    console.log(completeUrl);
+    const completeUrl = `${url}/shops/${shopID}/${customerID}/measurments/insert`;
+    console.log("Complete URL:", completeUrl);
     fetch(completeUrl, {
       method: "POST",
       headers: {
@@ -101,7 +108,6 @@ const AddNewMeasurement = () => {
       .then((response) => response.json())
       .then((res) => {
         if (res._id) {
-          Alert.alert("تم إضافة المقاس !");
           router.back();
         } else {
           Alert.alert("Adding measurement failed", res.message || res.error);
@@ -377,7 +383,6 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    // borderWidth: 1,
     backgroundColor: "#fff",
   },
   homeIcon: {
@@ -387,7 +392,6 @@ const styles = StyleSheet.create({
     width: "20%",
   },
   form: {
-    // borderWidth: 1,
     marginTop: 10,
     width: width * 0.9,
   },
