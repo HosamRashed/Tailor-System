@@ -54,7 +54,9 @@ const Home = () => {
           style={styles.button}
           onPress={() => navigateTo("/screens/SearchCustomer")}
         >
-          <Text style={styles.buttonText}>استخدام مقاس قديم لتفصيل ثوب جديد</Text>
+          <Text style={styles.buttonText}>
+            استخدام مقاس قديم لتفصيل ثوب جديد
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
@@ -64,7 +66,7 @@ const Home = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigateTo("/screens/ThoabDetails")}
+          onPress={() => navigateTo("/screens/Statistics")}
         >
           <Text style={styles.buttonText}>تفاصيل الثياب</Text>
         </TouchableOpacity>

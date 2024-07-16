@@ -70,11 +70,8 @@ const updateMeasurement = async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    // Convert measurementID to ObjectId
-    const measurementObjectId = new mongoose.Types.ObjectId(measurementID);
-
     // Find and update the measurement
-    const measurement = customer.measurements.id(measurementObjectId);
+    const measurement = await Measurement.findById(measurementID);
     if (!measurement) {
       return res.status(404).json({ message: "Measurement not found" });
     }
@@ -82,6 +79,7 @@ const updateMeasurement = async (req, res) => {
     // Update the measurement fields
     Object.assign(measurement, updatedMeasurement);
     await customer.save();
+    await measurement.save();
 
     res.status(200).json(customer);
   } catch (err) {

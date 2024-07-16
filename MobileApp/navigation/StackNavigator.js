@@ -5,7 +5,7 @@ import Home from "../app/home";
 import NewCustomer from "../app/screens/NewCustomer";
 import AddMeasurement from "../app/screens/AddMeasurement";
 import SearchCustomer from "../app/screens/SearchCustomer";
-import ThoabDetails from "../app/screens/ThoabDetails";
+import ThoabDetails from "../app/screens/Statistics";
 import TradersDetails from "../app/screens/Traders/Traders";
 import Support from "../app/screens/Support";
 

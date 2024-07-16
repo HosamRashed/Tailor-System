@@ -38,7 +38,7 @@ const MeasurementComponent = (props) => {
 
   const handleEdit = () => {
     router.push({
-      pathname: "./AddNewMeasurement",
+      pathname: "./ModifyMeasurement",
       params: {
         measurements: JSON.stringify(measurement),
         customerID: customerID,
