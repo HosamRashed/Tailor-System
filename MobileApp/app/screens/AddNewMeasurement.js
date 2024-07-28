@@ -55,8 +55,8 @@ const AddNewMeasurement = () => {
   const router = useRouter();
   const route = useRoute();
 
-  let { measurements, customerID } = route.params;
-  customerID = customerID.substring(0, customerID.length);
+  let { measurements, customerID, fullName } = route.params;
+  fillteredCustomerID = customerID.substring(1, customerID.length - 1);
 
   let parsedMeasurement = {};
 
@@ -92,11 +92,19 @@ const AddNewMeasurement = () => {
   const handleRequest = (values) => {
     // Convert values to English
     const convertedValues = Object.keys(values).reduce((acc, key) => {
-      acc[key] = convertArabicToEnglish(values[key]);
+      const value = values[key];
+      // Ensure value is a string before passing to conversion function
+      if (typeof value === "string") {
+        acc[key] = convertArabicToEnglish(value);
+      } else {
+        acc[key] = ""; // or some default value if needed
+      }
       return acc;
     }, {});
 
-    const completeUrl = `${url}/shops/${shopID}/${customerID}/measurments/insert`;
+    convertedValues.fullName = fullName;
+
+    const completeUrl = `${url}/shops/${shopID}/${fillteredCustomerID}/measurments/insert`;
     console.log("Complete URL:", completeUrl);
     fetch(completeUrl, {
       method: "POST",

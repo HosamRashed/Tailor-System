@@ -13,7 +13,7 @@ import moment from "moment";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter, Stack } from "expo-router";
 import { useSelector } from "react-redux";
-import MeasurementItem from "../componenets/MeasurementsStatus"; // Import the new component
+import MeasurementsStatus from "../componenets/MeasurementsStatus"; // Import the new component
 
 const Statistics = () => {
   const shopID = useSelector((state) => state.user.user._id);
@@ -57,12 +57,39 @@ const Statistics = () => {
         }));
         setFilteredData(formattedMeasurements);
       } else {
+        setFilteredData([]);
         setNoData("لا يوجد مقاسات سابقة للزبون!");
       }
     } catch (error) {
-      setLoading(false);
       Alert.alert("Request error", error.message);
       console.log(error.message);
+    }
+  };
+
+  const toggleStatus = async (item) => {
+    const newStatus = !item.status;
+    const updatedItem = { ...item, status: newStatus };
+    try {
+      await fetch(
+        `${url}/shops/${shopID}/${item.customerID}/measurments/${item._id}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      // Update local state with the new data
+      setFilteredData((prevData) =>
+        prevData.map((measurement) =>
+          measurement._id === item._id ? updatedItem : measurement
+        )
+      );
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Update error", "Failed to update the status.");
     }
   };
 
@@ -74,13 +101,6 @@ const Statistics = () => {
   const handleConfirmToDate = (date) => {
     setToDate(moment(date).toDate()); // Convert to Date object
     setToDatePickerVisibility(false);
-  };
-
-  const toggleStatus = (index) => {
-    const updatedData = [...filteredData];
-    updatedData[index].status =
-      updatedData[index].status === true ? false : true;
-    setFilteredData(updatedData);
   };
 
   const getFilteredData = () => {
@@ -210,10 +230,10 @@ const Statistics = () => {
         </View>
         <ScrollView contentContainerStyle={styles.scrollViewContentContainer}>
           {getFilteredData().map((item, index) => (
-            <MeasurementItem
+            <MeasurementsStatus
               key={index}
               item={item}
-              toggleStatus={() => toggleStatus(index)}
+              toggleStatus={toggleStatus}
             />
           ))}
         </ScrollView>

@@ -23,6 +23,7 @@ const {
   deleteMeasurement,
   getAllMeasurements,
   getDateRangeMeasurements,
+  updateMeasurementStatus,
 } = require("../controllers/measurement");
 
 const {
@@ -70,12 +71,17 @@ router.put(
   "/:shopID/:customerID/measurments/:measurementID",
   updateMeasurement
 );
+router.put(
+  "/:shopID/:customerID/measurments/:measurementID/status",
+  updateMeasurementStatus
+);
 router.get("/:shopID/:customerID/measurements/", getAllMeasurements);
 router.get("/:shopID/measurements/dates", getDateRangeMeasurements);
 router.get(
   "/:shopID/:customerID/measurments/:measurmentID",
   getSpecificMeasurement
 );
+
 router.delete(
   "/:shopID/:customerID/measurements/:measurementID",
   deleteMeasurement

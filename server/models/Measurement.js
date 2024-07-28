@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 
 const measurementSchema = new mongoose.Schema({
+  fullName: {
+    type: String,
+    required: true,
+  },
+  customerID: {
+    type: String,
+    required: true,
+  },
   status: {
     type: Boolean,
     default: false,

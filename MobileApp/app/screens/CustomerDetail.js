@@ -124,7 +124,10 @@ const CustomerDetail = () => {
             onPress={() => {
               router.push({
                 pathname: "./AddNewMeasurement",
-                params: { customerID: JSON.stringify(customerObj._id) },
+                params: {
+                  customerID: JSON.stringify(customerObj._id),
+                  fullName: JSON.stringify(customerObj.fullName),
+                },
               });
             }}
           >

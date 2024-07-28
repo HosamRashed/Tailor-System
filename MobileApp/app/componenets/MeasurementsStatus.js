@@ -1,31 +1,29 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Alert, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import moment from "moment";
+import { useSelector } from "react-redux";
 
 const MeasurementsStatus = ({ item, toggleStatus }) => {
-  //   console.log(item);s
   return (
     <View style={styles.itemContainer}>
       <TouchableOpacity
         style={[
           styles.statusToggleButton,
-          item.status === true ? styles.statusReady : styles.statusNotReady,
+          item.status ? styles.statusReady : styles.statusNotReady,
         ]}
-        onPress={toggleStatus}
+        onPress={() => toggleStatus(item)}
       >
         <Text
           style={[
             styles.statusToggleText,
-            item.status === true
-              ? styles.statusReadyText
-              : styles.statusNotReadyText,
+            item.status ? styles.statusReadyText : styles.statusNotReadyText,
           ]}
         >
-          {item.status === true ? "جاهز" : "غير جاهز"}
+          {item.status ? "جاهز" : "غير جاهز"}
         </Text>
       </TouchableOpacity>
       <View style={styles.itemDetails}>
-        <Text style={styles.itemText}>اسم الزبون: {item.name}</Text>
+        <Text style={styles.itemText}>اسم الزبون: {item.fullName}</Text>
         <Text style={styles.itemText}>رقم الصفحة: {item.pageNumber}</Text>
         <Text style={styles.itemDate}>تاريخ: {item.date}</Text>
       </View>
