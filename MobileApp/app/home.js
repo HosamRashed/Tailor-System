@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import { COLORS } from "../constants";
 
 // Get the screen dimensions
 const { width, height } = Dimensions.get("window");
@@ -18,11 +17,8 @@ const { width, height } = Dimensions.get("window");
 const Home = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-
   const user = useSelector((state) => state.user.user);
-  // console.log("hello", user);
 
-  // Handle navigation to specific routes
   const navigateTo = (routeName) => {
     router.push(routeName);
   };
@@ -31,7 +27,7 @@ const Home = () => {
     <SafeAreaView style={styles.container}>
       <Stack.Screen
         options={{
-          headerStyle: { backgroundColor: "#fff" },
+          headerStyle: { backgroundColor: "#f8f9fa" },
           headerShadowVisible: false,
           headerTitle: "",
           headerShown: false,
@@ -90,41 +86,56 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
-    paddingHorizontal: width * 0.02, // Responsive padding
+    backgroundColor: "#f0f4f8",
+    paddingHorizontal: width * 0.05, // Responsive padding
   },
+  borderWidth: 1,
   buttonContainer: {
     width: "100%",
     alignItems: "center",
   },
   button: {
-    width: "80%",
+    width: "90%",
     height: Platform.isPad ? 100 : 70, // Adjust height for iPad
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#e9ecef",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 20,
+    borderRadius: 10,
     marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5, // For Android
   },
   buttonText: {
-    fontSize: Platform.isPad ? 28 : 20, // Adjust font size for iPad
+    fontSize: Platform.isPad ? 24 : 18, // Adjust font size for iPad
+    color: "#0f5132",
+    fontWeight: "600",
   },
   supportButton: {
-    width: "80%",
-    height: Platform.isPad ? 70 : 50,
+    width: "90%",
+    height: Platform.isPad ? 80 : 60,
     backgroundColor: "#f08080",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
-    marginTop: 15,
+    marginTop: 30,
     position: "absolute",
     bottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5, // For Android
   },
   supportButtonText: {
     color: "#fff",
-    fontSize: Platform.isPad ? 28 : 20,
+    fontSize: Platform.isPad ? 24 : 18,
+    fontWeight: "600",
   },
 });
 

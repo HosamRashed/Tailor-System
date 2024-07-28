@@ -17,6 +17,7 @@ export default function Index() {
         dispatch(setUserSession(JSON.parse(userSession)));
         router.replace("/home");
       } else {
+        console.log("there was no user session!");
       }
     };
     checkSession();

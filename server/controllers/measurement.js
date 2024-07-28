@@ -32,7 +32,7 @@ const insertNewMeasurement = async (req, res) => {
     const newMeasurement = new Measurement(measurementData);
 
     customer.measurements.push(newMeasurement._id);
-    shop.thoabs.push(newMeasurement._id);
+    //  shop.thoabs.push(newMeasurement._id);
 
     await customer.save();
     await shop.save();
@@ -157,6 +157,43 @@ const getAllMeasurements = async (req, res) => {
   }
 };
 
+const getDateRangeMeasurements = async (req, res) => {
+  try {
+    const { shopID } = req.params;
+    const { fromDate, toDate } = req.query;
+
+    // Validate IDs
+    if (!mongoose.Types.ObjectId.isValid(shopID)) {
+      return res.status(400).json({ message: "Invalid shopID!" });
+    }
+
+    // Validate dates
+    if (!fromDate || !toDate) {
+      return res
+        .status(400)
+        .json({ message: "fromDate and toDate are required!" });
+    }
+
+    // Convert dates to Date objects
+    const fromDateObj = new Date(fromDate);
+    const toDateObj = new Date(toDate);
+
+    // Find the shop and populate the thoabs
+    const shop = await Shops.findById(shopID).populate({
+      path: "thoabs",
+      match: { date: { $gte: fromDateObj, $lte: toDateObj } },
+    });
+
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    res.status(200).json(shop.thoabs);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 const getSpecificMeasurement = async (req, res) => {
   try {
     const { shopID, customerID, measurementID } = req.params;
@@ -201,6 +238,7 @@ const getSpecificMeasurement = async (req, res) => {
 };
 
 module.exports = {
+  getDateRangeMeasurements,
   insertNewMeasurement,
   getSpecificMeasurement,
   updateMeasurement,
