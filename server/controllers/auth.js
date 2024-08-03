@@ -57,7 +57,7 @@ const loginShop = async (req, res) => {
     if (!shop) return res.status(400).json({ msg: "Shop does not exist." });
 
     const isMatch = await bcrypt.compare(password, shop.shopPassword);
-    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials." });
+    if (!isMatch) return res.status(400).json({ msg: "Wrong Password." });
 
     const token = jwt.sign({ id: shop._id }, process.env.JWT_SECRET);
     delete shop.shopPassword; // Ensure you delete `shopPassword` not `password`

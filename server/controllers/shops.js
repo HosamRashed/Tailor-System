@@ -1,5 +1,6 @@
 // const Post = require("../models/Post.js");
 const Shops = require("../models/Shops.js");
+const bcrypt = require("bcrypt");
 const Trader = require("../models/Trader.js");
 const Customer = require("../models/Customer.js");
 
@@ -66,6 +67,41 @@ const getActive_shops = async (req, res) => {
   try {
     const activeShops = await Shops.find({ status: true });
     res.status(200).json(activeShops);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const updateShopInfo = async (req, res) => {
+  try {
+    const { shopID } = req.params;
+    const { shopName, shopPhoneNumber, shopAddress, shopStatus, shopPassword } =
+      req.body;
+
+    if (!ObjectId.isValid(shopID)) {
+      return res.status(400).json({ message: "Invalid shop ID" });
+    }
+
+    const shop = await Shops.findById(shopID);
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found!" });
+    }
+
+    if (shopPassword) {
+      const salt = await bcrypt.genSalt();
+      const passwordhash = await bcrypt.hash(shopPassword, salt);
+      req.body.shopPassword = passwordhash;
+    }
+
+    const updatedShop = await Shops.findByIdAndUpdate(shopID, req.body, {
+      new: true,
+    });
+
+    if (!updatedShop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    res.status(200).json(updatedShop);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -144,5 +180,6 @@ module.exports = {
   getSpecificShop,
   getActive_shops,
   updateShopStatus,
+  updateShopInfo,
   deleteShop,
 };

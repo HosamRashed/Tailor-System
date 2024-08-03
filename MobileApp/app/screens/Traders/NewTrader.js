@@ -71,7 +71,7 @@ const NewTrader = () => {
         throw new Error(errorData.message || "Failed to add customer");
       }
 
-      Alert.alert("Trader added successfully");
+      Alert.alert("تم إضافة الموزع بنجاح !");
       router.back("/home");
     } catch (error) {
       Alert.alert("Error", error.message);
