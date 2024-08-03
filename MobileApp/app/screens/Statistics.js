@@ -67,6 +67,7 @@ const Statistics = () => {
   };
 
   const toggleStatus = async (item) => {
+    console.log(item.customerID);
     const newStatus = !item.status;
     const updatedItem = { ...item, status: newStatus };
     try {

@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const customerSchema = new mongoose.Schema({
+  shopID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Shops",
+    required: true,
+  },
   phoneNumber: {
     type: String,
     required: true,

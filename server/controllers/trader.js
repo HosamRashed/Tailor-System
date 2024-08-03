@@ -22,6 +22,7 @@ const insertNewTrader = async (req, res) => {
 
     // Create new trader instance
     const newTrader = new Trader({
+      shopID,
       name,
       phoneNumber,
       moneyAmount,

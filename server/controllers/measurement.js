@@ -96,7 +96,6 @@ const updateMeasurementStatus = async (req, res) => {
   try {
     const { shopID, customerID, measurementID } = req.params;
     const { status } = req.body; // Assuming status is sent in the request body
-    console.log("hello");
     // Validate IDs
     if (
       !mongoose.Types.ObjectId.isValid(shopID) ||

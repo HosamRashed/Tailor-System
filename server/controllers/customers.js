@@ -42,6 +42,7 @@ const insertNewCustomer = async (req, res) => {
     }
 
     const newCustomer = new Customers({
+      shopID,
       fullName,
       phoneNumber,
       measurements,

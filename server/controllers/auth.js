@@ -7,7 +7,14 @@ const User = require("../models/User.js");
 const createShop = async (req, res) => {
   try {
     // Extract shop data from request body
-    const { shopName, shopPhoneNumber, shopAddress, shopPassword } = req.body;
+    const {
+      shopStatus,
+      shopOwner,
+      shopName,
+      shopPhoneNumber,
+      shopAddress,
+      shopPassword,
+    } = req.body;
 
     // Check if shopPhoneNumber is unique
     const existingShop = await Shops.findOne({ shopPhoneNumber });
@@ -22,7 +29,8 @@ const createShop = async (req, res) => {
 
     // Create new shop instance
     const newShop = new Shops({
-      shopStatus: true,
+      shopOwner,
+      shopStatus,
       shopPassword: passwordhash,
       shopName,
       shopPhoneNumber,

@@ -3,6 +3,10 @@ const Customers = require("./Customer");
 
 const shopsSchema = mongoose.Schema(
   {
+    shopOwner: {
+      type: String,
+      required: true,
+    },
     shopStatus: {
       type: Boolean,
       default: true,

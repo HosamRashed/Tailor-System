@@ -5,7 +5,7 @@ import { createStore, combineReducers } from "redux";
 const initialState = {
   user: null,
   isLoggedIn: false,
-  url: "https://12ec-2001-f40-904-457e-b81f-db1d-f4a2-1105.ngrok-free.app",
+  url: "https://58ce-2001-f40-904-457e-b81f-db1d-f4a2-1105.ngrok-free.app",
 };
 
 const userReducer = (state = initialState, action) => {

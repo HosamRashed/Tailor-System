@@ -8,6 +8,11 @@ const paymentSchema = new mongoose.Schema({
 
 // Define the Traders schema
 const tradersSchema = new mongoose.Schema({
+  shopID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Shops",
+    required: true,
+  },
   name: {
     type: String,
     required: true,

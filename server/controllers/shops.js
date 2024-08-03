@@ -1,5 +1,8 @@
 // const Post = require("../models/Post.js");
 const Shops = require("../models/Shops.js");
+const Trader = require("../models/Trader.js");
+const Customer = require("../models/Customer.js");
+
 const { ObjectId } = require("mongodb"); // Import ObjectId to validate MongoDB IDs
 
 /* CREATE */
@@ -73,6 +76,7 @@ const updateShopStatus = async (req, res) => {
     const { shopID } = req.params; // Extract the shopID from the request parameters
     const { status } = req.body; // Extract the new status from the request body
 
+    console.log(status);
     // Validate the status input
     if (typeof status !== "boolean") {
       return res.status(400).json({ message: "Invalid status value" });
@@ -87,22 +91,22 @@ const updateShopStatus = async (req, res) => {
     const objectId = new ObjectId(shopID);
 
     // Update the shop's status
-    const updatedShop = await Shops.findOneAndUpdate(
-      { _id: objectId },
-      { status },
-      { new: true } // Return the updated document
-    );
-
+    const updatedShop = await Shops.findById(objectId);
     if (!updatedShop) {
       return res.status(404).json({ message: "Shop not found" });
     }
+
+    // Update the status field
+    updatedShop.shopStatus = status !== undefined ? status : measurement.status;
+    await updatedShop.save();
+
+    console.log(updatedShop.shopStatus);
 
     res.status(200).json(updatedShop); // Send the updated shop as the response
   } catch (err) {
     res.status(500).json({ message: err.message }); // Handle errors
   }
 };
-
 const deleteShop = async (req, res) => {
   try {
     const { shopID } = req.params; // Extract the shopID from the request parameters
@@ -114,6 +118,10 @@ const deleteShop = async (req, res) => {
 
     // Convert shopID to ObjectId
     const objectId = new ObjectId(shopID);
+
+    // Delete related traders and customers
+    await Trader.deleteMany({ shopID: objectId });
+    await Customer.deleteMany({ shopID: objectId });
 
     // Delete the shop
     const deletedShop = await Shops.findOneAndDelete({ _id: objectId });
@@ -129,31 +137,6 @@ const deleteShop = async (req, res) => {
     res.status(500).json({ message: err.message }); // Handle errors
   }
 };
-// /* UPDATE */
-// export const likePost = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { userId } = req.body;
-//     const post = await Post.findById(id);
-//     const isLiked = post.likes.get(userId);
-
-//     if (isLiked) {
-//       post.likes.delete(userId);
-//     } else {
-//       post.likes.set(userId, true);
-//     }
-
-//     const updatedPost = await Post.findByIdAndUpdate(
-//       id,
-//       { likes: post.likes },
-//       { new: true }
-//     );
-
-//     res.status(200).json(updatedPost);
-//   } catch (err) {
-//     res.status(404).json({ message: err.message });
-//   }
-// };
 
 module.exports = {
   createShop,

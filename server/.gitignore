@@ -2,10 +2,6 @@
 
 # dependencies
 /node_modules
-/models
-/middleware
-/routes
-
 /.pnp
 .pnp.js
 
@@ -14,6 +10,10 @@
 
 # production
 /build
+/models
+/middleware
+/routes
+/controllers
 
 # misc
 .DS_Store
