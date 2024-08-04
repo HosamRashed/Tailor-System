@@ -112,7 +112,6 @@ const updateShopStatus = async (req, res) => {
     const { shopID } = req.params; // Extract the shopID from the request parameters
     const { status } = req.body; // Extract the new status from the request body
 
-    console.log(status);
     // Validate the status input
     if (typeof status !== "boolean") {
       return res.status(400).json({ message: "Invalid status value" });
@@ -135,8 +134,6 @@ const updateShopStatus = async (req, res) => {
     // Update the status field
     updatedShop.shopStatus = status !== undefined ? status : measurement.status;
     await updatedShop.save();
-
-    console.log(updatedShop.shopStatus);
 
     res.status(200).json(updatedShop); // Send the updated shop as the response
   } catch (err) {

@@ -10,6 +10,9 @@ import {
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { clearUserSession } from "./actions/userActions";
+import Icon from "react-native-vector-icons/Ionicons";
 
 // Get the screen dimensions
 const { width, height } = Dimensions.get("window");
@@ -23,6 +26,14 @@ const Home = () => {
     router.push(routeName);
   };
 
+  const handleSignOut = async () => {
+    // Dispatch an action to clear the user state or any other sign-out logic
+    dispatch(clearUserSession());
+    await AsyncStorage.removeItem("userSession");
+
+    router.replace("/screens/Login");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen
@@ -33,6 +44,11 @@ const Home = () => {
           headerShown: false,
         }}
       />
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+          <Text style={styles.signOutText}>تسجيل خروج</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
@@ -86,11 +102,35 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f0f4f8",
     paddingHorizontal: width * 0.05, // Responsive padding
+  },
+  header: {
+    justifyContent: "flex-star",
+    width: "90%",
+    padding: 10,
+    paddingHorizontal: 0,
+    backgroundColor: "#f0f4f8",
+    alignItems: "right",
+  },
+  signOutButton: {
+    alignSelf: "flex-end",
+    borderRadius: 5,
+    padding: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#f08080",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5, // For Android
+  },
+  signOutText: {
+    color: "#fff",
+    fontSize: Platform.isPad ? 24 : 18,
+    fontWeight: "600",
   },
   borderWidth: 1,
   buttonContainer: {
@@ -119,7 +159,7 @@ const styles = StyleSheet.create({
   supportButton: {
     width: "90%",
     height: Platform.isPad ? 80 : 60,
-    backgroundColor: "#f08080",
+    backgroundColor: "#90ee90",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
@@ -133,9 +173,9 @@ const styles = StyleSheet.create({
     elevation: 5, // For Android
   },
   supportButtonText: {
-    color: "#fff",
+    color: "black",
     fontSize: Platform.isPad ? 24 : 18,
-    fontWeight: "600",
+    fontWeight: "500",
   },
 });
 
