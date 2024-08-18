@@ -17,16 +17,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Formik } from "formik";
 import * as yup from "yup";
+import * as SecureStore from "expo-secure-store";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
 
 const NewPayment = () => {
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
   const route = useRoute();
 
-  const dispatch = useDispatch();
   const router = useRouter();
 
   const { trader } = route.params;
@@ -54,6 +54,8 @@ const NewPayment = () => {
   });
 
   const handleRequest = async (values) => {
+    const userToken = await SecureStore.getItemAsync("userToken");
+
     const completeUrl = `${url}/shops/${shopID}/traders/${traderID}/payments/insert`;
 
     try {
@@ -61,6 +63,7 @@ const NewPayment = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
         },
         body: JSON.stringify(values),
       });

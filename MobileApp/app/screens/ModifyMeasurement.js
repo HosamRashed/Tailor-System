@@ -15,6 +15,7 @@ import {
 import { Formik } from "formik";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as yup from "yup";
+import * as SecureStore from "expo-secure-store";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
@@ -51,7 +52,7 @@ const convertArabicToEnglish = (text) => {
 
 const ModifyMeasurement = () => {
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
   const router = useRouter();
   const route = useRoute();
 
@@ -89,8 +90,9 @@ const ModifyMeasurement = () => {
     additionalRequirements: parsedMeasurement?.additionalRequirements || "",
   };
 
-  const handleRequest = (values) => {
+  const handleRequest = async (values) => {
     // Convert values to English
+    const userToken = await SecureStore.getItemAsync("userToken");
     const convertedValues = Object.keys(values).reduce((acc, key) => {
       acc[key] = convertArabicToEnglish(values[key]);
       return acc;
@@ -102,6 +104,7 @@ const ModifyMeasurement = () => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
       },
       body: JSON.stringify(convertedValues),
     })

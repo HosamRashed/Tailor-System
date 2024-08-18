@@ -17,6 +17,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Formik } from "formik";
 import * as yup from "yup";
+import * as SecureStore from "expo-secure-store";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useRouter, Stack } from "expo-router";
 import TraderComponent from "../../componenets/TraderComponent";
@@ -36,7 +37,7 @@ const validationSchema = yup.object().shape({
 
 const Traders = () => {
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
   const [searchText, setSearchText] = useState("");
   const [noData, setNoData] = useState("");
   const router = useRouter();
@@ -50,11 +51,18 @@ const Traders = () => {
     }, [])
   );
 
-  const fetchAllTraders = () => {
+  const fetchAllTraders = async () => {
+    const userToken = await SecureStore.getItemAsync("userToken");
     setLoading(true);
     const completeUrl = `${url}/shops/${shopID}/traders`;
 
-    fetch(completeUrl)
+    fetch(completeUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    })
       .then((response) => response.json())
       .then((res) => {
         setLoading(false);

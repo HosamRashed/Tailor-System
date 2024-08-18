@@ -110,6 +110,7 @@ const deleteCustomer = async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
+    await Measurement.deleteMany({ customerID: customerID });
     shop.customers.pull(customerID);
     await shop.save();
 

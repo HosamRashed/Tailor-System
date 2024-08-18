@@ -12,9 +12,10 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserSession } from "../actions/userActions";
+import { jwtDecode } from "jwt-decode";
 import { useRouter, Stack } from "expo-router";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -40,7 +41,30 @@ const Login = () => {
     password: yup.string().required("الرمز السري مطلوب"),
   });
 
-  const handleLogin = (values) => {
+  const storeUserSession = async (shop, token, tokenExpiration) => {
+    try {
+      // Store the shop information securely
+      await SecureStore.setItemAsync("userSession", JSON.stringify(shop));
+
+      // Store the token securely
+      await SecureStore.setItemAsync("userToken", token);
+
+      // Store the token expiration time securely
+      await SecureStore.setItemAsync(
+        "tokenExpiration",
+        tokenExpiration.toString()
+      );
+
+      // Optionally store login status
+      await SecureStore.setItemAsync("loginStatus", "loggedIn");
+
+      console.log("User session and token stored securely.");
+    } catch (error) {
+      console.error("Failed to store the user session or token:", error);
+    }
+  };
+
+  const handleLogin = (values, { setErrors, setSubmitting }) => {
     const { phoneNumber, password } = values;
     const completeUrl = `${url}/auth/loginShop`;
     const data = {
@@ -58,16 +82,52 @@ const Login = () => {
       .then((response) => response.json())
       .then(async (res) => {
         if (res.token) {
-          dispatch(setUserSession(res.shop));
-          await AsyncStorage.setItem("userSession", JSON.stringify(res.shop));
-          router.replace("/home");
+          // Calculate token expiration (assuming token has expiration time in payload)
+          try {
+            const tokenExpiration = jwtDecode(res.token).exp * 1000; // Convert expiration time to milliseconds
+
+            // Dispatch user session to Redux
+            dispatch(setUserSession(res.shop, res.token, tokenExpiration));
+
+            // Store user session and token securely
+            await storeUserSession(res.shop, res.token, tokenExpiration);
+
+            // Redirect to home page
+            router.replace("/home");
+          } catch (error) {
+            // Handle token decoding errors
+            Alert.alert("Token error", "Failed to decode the token.");
+            console.error("Token decoding error:", error);
+          }
         } else {
-          Alert.alert("Login failed", res.msg || res.error);
+          // Handle server-side validation errors
+          if (
+            res.msg === "Wrong Password." ||
+            res.error === "Wrong Password."
+          ) {
+            setErrors({
+              password: "الرمز السري غير صحيح!", // Translate or adjust the error message as needed
+            });
+          } else if (
+            res.msg === "Shop does not exist." ||
+            res.error === "Shop does not exist."
+          ) {
+            setErrors({
+              password: "لا يوجد محل مرتبط بالرقم المدخل !", // Translate or adjust the error message as needed
+            });
+          } else {
+            setErrors({
+              password: res.msg || res.error, // General error message
+            });
+          }
         }
+        setSubmitting(false);
       })
       .catch((error) => {
+        // Handle network or unexpected errors
         Alert.alert("Login error", error.message);
         console.log(error.message);
+        setSubmitting(false);
       });
   };
 
@@ -93,6 +153,8 @@ const Login = () => {
           values,
           errors,
           touched,
+          isSubmitting,
+          setErrors,
         }) => (
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
@@ -120,10 +182,16 @@ const Login = () => {
                 onChangeText={handleChange("password")}
                 onBlur={handleBlur("password")}
               />
-              {touched.password && errors.password && (
-                <Text style={styles.errorText}>{errors.password}</Text>
+              {touched.password && (errors.password || errors.serverError) && (
+                <Text style={styles.errorText}>
+                  {errors.password || errors.serverError}
+                </Text>
               )}
-              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleSubmit}
+                disabled={isSubmitting}
+              >
                 <Text style={styles.buttonText}>تسجيل</Text>
               </TouchableOpacity>
               <TouchableOpacity

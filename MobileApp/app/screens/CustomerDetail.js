@@ -15,11 +15,12 @@ import { useFocusEffect, useRouter, Stack } from "expo-router";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
+import * as SecureStore from "expo-secure-store";
 import MeasurementComponent from "../componenets/MeasurementComponent";
 
 const CustomerDetail = () => {
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
   const [measurements, setMeasurements] = useState([]);
   const route = useRoute();
   const router = useRouter();
@@ -37,7 +38,8 @@ const CustomerDetail = () => {
     }, [])
   );
 
-  const handleRequest = () => {
+  const handleRequest = async () => {
+    const userToken = await SecureStore.getItemAsync("userToken");
     setLoading(true);
     const completeUrl = `${url}/shops/${shopID}/${customerID}/measurements`;
 
@@ -45,6 +47,7 @@ const CustomerDetail = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
       },
     })
       .then((response) => response.json())

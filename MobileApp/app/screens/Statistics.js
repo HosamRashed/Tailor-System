@@ -13,10 +13,11 @@ import moment from "moment";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter, Stack } from "expo-router";
 import { useSelector } from "react-redux";
+import * as SecureStore from "expo-secure-store";
 import MeasurementsStatus from "../componenets/MeasurementsStatus"; // Import the new component
 
 const Statistics = () => {
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
   const url = useSelector((state) => state.user.url);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -37,6 +38,7 @@ const Statistics = () => {
 
   const fetchData = async () => {
     setLoading(true);
+    const userToken = await SecureStore.getItemAsync("userToken");
     const formattedFromDate = moment(fromDate).format("YYYY-MM-DD");
     const formattedToDate = moment(toDate).format("YYYY-MM-DD");
     const completeUrl = `${url}/shops/${shopID}/measurements/dates?fromDate=${formattedFromDate}&toDate=${formattedToDate}`;
@@ -46,6 +48,7 @@ const Statistics = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
         },
       });
       const res = await response.json();

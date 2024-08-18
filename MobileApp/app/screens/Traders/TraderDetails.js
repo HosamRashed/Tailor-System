@@ -14,11 +14,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useFocusEffect, useRouter, Stack } from "expo-router";
 import { useRoute } from "@react-navigation/native";
 import { useSelector } from "react-redux";
+import * as SecureStore from "expo-secure-store";
 import PaymentComponent from "../../componenets/PaymentComponent"; // Adjust the path according to your project structure
 
 const TraderDetails = () => {
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
   const [traderDetails, setTraderDetails] = useState({});
   const route = useRoute();
   const router = useRouter();
@@ -34,7 +35,8 @@ const TraderDetails = () => {
     }, [])
   );
 
-  const handleRequest = () => {
+  const handleRequest = async () => {
+    const userToken = await SecureStore.getItemAsync("userToken");
     setLoading(true);
     const completeUrl = `${url}/shops/${shopID}/traders/${cleanedTraderID}`;
 
@@ -42,6 +44,7 @@ const TraderDetails = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
       },
     })
       .then((response) => response.json())

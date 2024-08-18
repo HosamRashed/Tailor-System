@@ -2,10 +2,11 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { useSelector } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import * as SecureStore from "expo-secure-store";
 
 const PaymentComponent = ({ payment, traderID, onDelete }) => {
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -16,11 +17,16 @@ const PaymentComponent = ({ payment, traderID, onDelete }) => {
   };
 
   const handleDelete = async () => {
+    const userToken = await SecureStore.getItemAsync("userToken");
     try {
       const response = await fetch(
         `${url}/shops/${shopID}/traders/${traderID}/${payment._id}`,
         {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userToken}`,
+          },
         }
       );
 

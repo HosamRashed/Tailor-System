@@ -16,13 +16,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik } from "formik";
 import * as yup from "yup";
+import * as SecureStore from "expo-secure-store";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
 
 const NewCustomer = () => {
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -40,7 +41,9 @@ const NewCustomer = () => {
       .matches(/^[0-9]+$/, "يجب أن يحتوي رقم الجوال على أرقام فقط"),
   });
 
-  const handleRequest = (values) => {
+  const handleRequest = async (values) => {
+    const userToken = await SecureStore.getItemAsync("userToken");
+
     const { customerName, phoneNumber } = values;
     const completeUrl = `${url}/shops/${shopID}/customers/insert`; // Ensure shopID is defined
     const data = {
@@ -53,13 +56,13 @@ const NewCustomer = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
       },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((res) => {
         if (res._id) {
-          // Assuming res contains the new customer object
           Alert.alert("تم إضافة الزبون !");
           router.back("/home");
         } else {

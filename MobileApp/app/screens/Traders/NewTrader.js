@@ -16,15 +16,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik } from "formik";
 import * as yup from "yup";
+import * as SecureStore from "expo-secure-store";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
 
 const NewTrader = () => {
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
 
-  const dispatch = useDispatch();
   const router = useRouter();
 
   const initialValues = {
@@ -49,6 +49,8 @@ const NewTrader = () => {
   });
 
   const handleRequest = async (values) => {
+    const userToken = await SecureStore.getItemAsync("userToken");
+
     const { traderName, phoneNumber, moneyAmount } = values;
     const completeUrl = `${url}/shops/${shopID}/traders/insert`; // Ensure shopID is defined
     const data = {
@@ -62,6 +64,7 @@ const NewTrader = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
         },
         body: JSON.stringify(data),
       });

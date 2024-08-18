@@ -2,15 +2,17 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import * as SecureStore from "expo-secure-store";
 import { useSelector } from "react-redux";
 
 const MeasurementComponent = (props) => {
   const router = useRouter();
   const { measurement, onDelete, customerID } = props;
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    const userToken = await SecureStore.getItemAsync("userToken");
     Alert.alert("تأكيد الحذف", "هل أنت متأكد أنك تريد حذف هذه المقاس ؟", [
       { text: "إلغاء", style: "cancel" },
       {
@@ -22,6 +24,7 @@ const MeasurementComponent = (props) => {
               method: "DELETE",
               headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${userToken}`,
               },
             }
           );

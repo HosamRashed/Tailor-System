@@ -6,7 +6,6 @@ const User = require("../models/User.js");
 // /* create a shop */
 const createShop = async (req, res) => {
   try {
-    // Extract shop data from request body
     const {
       shopStatus,
       shopOwner,
@@ -16,22 +15,29 @@ const createShop = async (req, res) => {
       shopPassword,
     } = req.body;
 
+    // Validate required fields
+    if (!shopPhoneNumber || !shopPassword) {
+      return res
+        .status(400)
+        .json({ message: "Phone number and password are required." });
+    }
+
     // Check if shopPhoneNumber is unique
     const existingShop = await Shops.findOne({ shopPhoneNumber });
     if (existingShop) {
       return res.status(409).json({
-        message: "there is a Shop with the same  phone number already exists",
+        message: "A shop with this phone number already exists.",
       });
     }
 
     const salt = await bcrypt.genSalt();
-    const passwordhash = await bcrypt.hash(shopPassword, salt);
+    const passwordHash = await bcrypt.hash(shopPassword, salt);
 
     // Create new shop instance
     const newShop = new Shops({
       shopOwner,
       shopStatus,
-      shopPassword: passwordhash,
+      shopPassword: passwordHash,
       shopName,
       shopPhoneNumber,
       shopAddress,
@@ -51,17 +57,31 @@ const createShop = async (req, res) => {
 /* Shop LOGGING IN */
 const loginShop = async (req, res) => {
   try {
-    console.log("inside login api body");
     const { phoneNumber, password } = req.body;
+
+    if (!phoneNumber || !password) {
+      return res
+        .status(400)
+        .json({ msg: "Phone number and password are required." });
+    }
+
     const shop = await Shops.findOne({ shopPhoneNumber: phoneNumber });
+
     if (!shop) return res.status(400).json({ msg: "Shop does not exist." });
 
     const isMatch = await bcrypt.compare(password, shop.shopPassword);
     if (!isMatch) return res.status(400).json({ msg: "Wrong Password." });
 
-    const token = jwt.sign({ id: shop._id }, process.env.JWT_SECRET);
-    delete shop.shopPassword; // Ensure you delete `shopPassword` not `password`
-    res.status(200).json({ token, shop });
+    // Set the token expiration to 3 days
+    const token = jwt.sign({ id: shop._id }, process.env.JWT_SECRET, {
+      expiresIn: "3d",
+    });
+
+    // Ensure you delete `shopPassword` before sending shop data
+    const shopData = shop.toObject();
+    delete shopData.shopPassword;
+
+    res.status(200).json({ token, shop: shopData });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

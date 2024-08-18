@@ -10,9 +10,8 @@ import {
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 import { clearUserSession } from "./actions/userActions";
-import Icon from "react-native-vector-icons/Ionicons";
 
 // Get the screen dimensions
 const { width, height } = Dimensions.get("window");
@@ -27,9 +26,16 @@ const Home = () => {
   };
 
   const handleSignOut = async () => {
-    // Dispatch an action to clear the user state or any other sign-out logic
     dispatch(clearUserSession());
-    await AsyncStorage.removeItem("userSession");
+
+    try {
+      await SecureStore.deleteItemAsync("userSession");
+      await SecureStore.deleteItemAsync("userToken");
+      await SecureStore.setItemAsync("loginStatus", "loggedOut");
+      console.log("User session, token removed, and login status updated.");
+    } catch (error) {
+      console.error("Failed to remove the user session or token:", error);
+    }
 
     router.replace("/screens/Login");
   };
@@ -102,7 +108,7 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "start",
     alignItems: "center",
     backgroundColor: "#f0f4f8",
     paddingHorizontal: width * 0.05, // Responsive padding

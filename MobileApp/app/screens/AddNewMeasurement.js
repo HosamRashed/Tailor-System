@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { Formik } from "formik";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import * as yup from "yup";
+import * as SecureStore from "expo-secure-store";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
@@ -51,7 +51,7 @@ const convertArabicToEnglish = (text) => {
 
 const AddNewMeasurement = () => {
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
   const router = useRouter();
   const route = useRoute();
 
@@ -89,7 +89,8 @@ const AddNewMeasurement = () => {
     additionalRequirements: parsedMeasurement?.additionalRequirements || "",
   };
 
-  const handleRequest = (values) => {
+  const handleRequest = async (values) => {
+    const userToken = await SecureStore.getItemAsync("userToken");
     // Convert values to English
     const convertedValues = Object.keys(values).reduce((acc, key) => {
       const value = values[key];
@@ -105,11 +106,11 @@ const AddNewMeasurement = () => {
     convertedValues.fullName = fullName;
 
     const completeUrl = `${url}/shops/${shopID}/${fillteredCustomerID}/measurments/insert`;
-    console.log("Complete URL:", completeUrl);
     fetch(completeUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
       },
       body: JSON.stringify(convertedValues),
     })

@@ -17,6 +17,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Formik } from "formik";
 import * as yup from "yup";
+import * as SecureStore from "expo-secure-store";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter, Stack } from "expo-router";
 import CustomerComponent from "../componenets/CustomerComponent";
@@ -45,7 +46,7 @@ const validationSchema = (searchType) =>
 
 const SearchCustomer = () => {
   const url = useSelector((state) => state.user.url);
-  const shopID = useSelector((state) => state.user.user._id);
+  const shopID = useSelector((state) => state.user.user.shopInfo._id);
 
   let [searchType, setSearchType] = useState("Name");
   let [searchText, setSearchText] = useState("");
@@ -60,7 +61,9 @@ const SearchCustomer = () => {
     searchType: "Name",
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const userToken = await SecureStore.getItemAsync("userToken");
+
     setLoading(true);
     const completeUrl = `${url}/shops/${shopID}/customers/findCustomerBy${searchType}`;
     const data = {
@@ -71,6 +74,7 @@ const SearchCustomer = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
       },
       body: JSON.stringify(data),
     })
@@ -79,6 +83,7 @@ const SearchCustomer = () => {
         setLoading(false);
         if (res.length > 0) {
           setResults(res);
+          Keyboard.dismiss();
         } else {
           setResults([]);
           setNoData("لا يوجد زبائن مطابقين للبحث!");
@@ -91,6 +96,15 @@ const SearchCustomer = () => {
       });
   };
 
+  const handleDelete = (id) => {
+    setResults((prevResults) =>
+      prevResults.filter((customer) => customer._id !== id)
+    );
+  };
+
+  const onUpdate = () => {
+    handleSubmit();
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <TouchableOpacity
@@ -190,7 +204,13 @@ const SearchCustomer = () => {
             <FlatList
               data={results}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => <CustomerComponent customer={item} />}
+              renderItem={({ item }) => (
+                <CustomerComponent
+                  customer={item}
+                  onDelete={handleDelete}
+                  onUpdate={onUpdate}
+                />
+              )}
               contentContainerStyle={styles.resultsList}
             />
           </>

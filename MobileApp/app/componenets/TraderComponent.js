@@ -5,14 +5,6 @@ import { useRouter } from "expo-router";
 const TraderComponent = ({ trader }) => {
   const router = useRouter();
 
-  const handleEdit = () => {
-    // Handle edit action
-  };
-
-  const handleDelete = () => {
-    // Handle delete action
-  };
-
   const handleTrader = () => {
     router.push({
       pathname: "../Traders/TraderDetails",
